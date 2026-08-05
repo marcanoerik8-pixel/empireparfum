@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empire Parfum — Catálogo Oficial</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="description" content="Empire Parfum: fragancias para caballeros y damas, lotes para mayoristas. Pide directo por WhatsApp.">
+<style>
+/* ==========================================================================
+   EMPIRE PARFUM — Hoja de estilos
+   Paleta oficial: negro (#1a1a1a), dorado (#d4af37) y blanco (#f9f9f9).
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap');
+
+:root {
+  --primary: #1a1a1a;
+  --accent: #d4af37;
+  --bg: #0a0a0a;
+
+  --primary-deep: #0e0e0e;
+  --primary-soft: #2b2b2b;
+  --accent-light: #e9cf7c;
+  --accent-dark: #a9832a;
+  --white: #f5f0e8;
+  --gray-text: #6b6b6b;
+  --gray-border: #e7e3d8;
+
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Jost', 'Segoe UI', sans-serif;
+
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.16);
+  --radius: 14px;
+  --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--primary); font-family: var(--font-body); line-height: 1.6; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+.container { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
+
+.eyebrow { display: inline-block; font-family: var(--font-body); font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+
+/* HEADER / NAV */
+.site-header { position: sticky; top: 0; z-index: 100; background-color: var(--primary); border-bottom: 1px solid rgba(212, 175, 55, 0.35); }
+.nav-bar { max-width: 1140px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+.logo { font-family: var(--font-display); font-size: 1.7rem; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; white-space: nowrap; cursor: pointer; }
+.logo span { color: var(--white); font-weight: 400; }
+.nav-search { flex: 1; max-width: 420px; position: relative; }
+.nav-search input { width: 100%; padding: 0.65rem 2.6rem 0.65rem 1rem; border-radius: 30px; border: 1px solid rgba(212, 175, 55, 0.4); background-color: rgba(255, 255, 255, 0.06); color: var(--white); font-family: var(--font-body); font-size: 0.9rem; outline: none; transition: border-color var(--transition), background-color var(--transition); }
+.nav-search input::placeholder { color: #b8b8b8; }
+.nav-search input:focus { border-color: var(--accent); background-color: rgba(255, 255, 255, 0.1); }
+.nav-search svg { position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--accent); pointer-events: none; }
+.nav-links { display: flex; gap: 1.6rem; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; }
+.nav-links a { color: #d8d8d8; position: relative; padding-bottom: 4px; transition: color var(--transition); cursor: pointer; }
+.nav-links a::after { content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--accent); transition: width var(--transition); }
+.nav-links a:hover { color: var(--accent); }
+.nav-links a:hover::after { width: 100%; }
+.nav-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+.nav-toggle span { width: 24px; height: 2px; background-color: var(--accent); }
+
+/* HERO */
+.hero { position: relative; background-color: var(--primary); color: var(--white); overflow: hidden; padding: 6rem 1.5rem 7rem; text-align: center; }
+.hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.18) 0%, transparent 55%); pointer-events: none; }
+.hero::after { content: ""; position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, rgba(212,175,55,0.5), transparent); }
+.hero-ornament { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.8rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.1s; }
+.hero-ornament-line { width: 60px; height: 1px; background: linear-gradient(to right, transparent, rgba(212,175,55,0.6)); }
+.hero-ornament-line.right { background: linear-gradient(to left, transparent, rgba(212,175,55,0.6)); }
+.hero-ornament-diamond { width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); }
+.hero-eyebrow { opacity: 0; animation: fadeUp 0.8s ease forwards 0.1s; }
+.hero h1 { position: relative; font-family: var(--font-display); font-weight: 500; font-size: clamp(3.2rem, 7vw, 6rem); letter-spacing: 8px; text-transform: uppercase; margin: 0.4rem 0 0.8rem; opacity: 0; animation: fadeUp 0.9s ease forwards 0.25s; line-height: 1; }
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-tagline { font-family: var(--font-display); font-style: italic; font-size: 1.1rem; color: rgba(212,175,55,0.7); letter-spacing: 2px; margin-bottom: 1.6rem; opacity: 0; animation: fadeUp 0.9s ease forwards 0.35s; }
+.hero p.subtitle { position: relative; max-width: 480px; margin: 0 auto 2.4rem; color: #b8b8b8; font-size: 0.97rem; line-height: 1.8; opacity: 0; animation: fadeUp 0.9s ease forwards 0.45s; }
+.hero-divider { width: 40px; height: 1px; background: var(--accent); margin: 0 auto 2rem; opacity: 0; animation: fadeUp 0.9s ease forwards 0.4s; }
+.hero-cta { position: relative; display: inline-flex; gap: 1rem; opacity: 0; animation: fadeUp 0.9s ease forwards 0.6s; }
+.hero-stats { display: flex; justify-content: center; gap: 3rem; margin-top: 3.5rem; opacity: 0; animation: fadeUp 0.9s ease forwards 0.75s; }
+.hero-stat { text-align: center; }
+.hero-stat-num { font-family: var(--font-display); font-size: 2rem; color: var(--accent); font-weight: 500; line-height: 1; }
+.hero-stat-label { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-top: 0.3rem; }
+
+.btn { display: inline-block; font-family: var(--font-body); font-weight: 500; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 0.9rem 2rem; border-radius: 30px; border: 1px solid transparent; cursor: pointer; transition: transform var(--transition), box-shadow var(--transition), background-color var(--transition), color var(--transition); }
+.btn:hover { transform: translateY(-3px); }
+.btn-gold { background-color: var(--accent); color: var(--primary); }
+.btn-gold:hover { background-color: var(--accent-light); box-shadow: var(--shadow-hover); }
+.btn-outline { background-color: transparent; color: var(--accent); border-color: rgba(212, 175, 55, 0.6); }
+.btn-outline:hover { background-color: rgba(212, 175, 55, 0.1); }
+.btn-whatsapp { background-color: #1a1a1a; color: var(--accent); border: 1px solid var(--accent); width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
+.btn-whatsapp:hover { background-color: var(--accent); color: var(--primary); box-shadow: var(--shadow-hover); }
+.btn-whatsapp svg { width: 18px; height: 18px; fill: currentColor; }
+
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+/* CATEGORÍAS */
+.categorias { padding: 3.5rem 1.5rem 2rem; background: var(--bg); }
+.categorias-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.4rem; max-width: 1140px; margin: 0 auto; }
+.categoria-chip { display: flex; flex-direction: row; align-items: center; gap: 1.4rem; cursor: pointer; transition: transform var(--transition), box-shadow var(--transition); background: var(--primary); border: 1px solid rgba(212,175,55,0.25); border-radius: 16px; padding: 1.4rem 2rem; min-width: 280px; flex: 1; max-width: 340px; position: relative; overflow: hidden; }
+.categoria-chip::before { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(212,175,55,0.06) 0%, transparent 60%); pointer-events: none; }
+.categoria-chip:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(212,175,55,0.4); border-color: rgba(212,175,55,0.5); }
+.categoria-icono-wrap { width: 56px; height: 56px; border-radius: 14px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background var(--transition); }
+.categoria-chip:hover .categoria-icono-wrap { background: rgba(212,175,55,0.18); }
+.categoria-icono-wrap svg { width: 28px; height: 28px; stroke: var(--accent); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.categoria-texto { display: flex; flex-direction: column; gap: 0.25rem; }
+.categoria-nombre { font-size: 0.9rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; color: var(--white); }
+.categoria-etiqueta { font-size: 0.78rem; color: var(--accent); letter-spacing: 0.5px; }
+.categoria-flecha { margin-left: auto; color: rgba(212,175,55,0.4); font-size: 1.2rem; transition: transform var(--transition), color var(--transition); }
+.categoria-chip:hover .categoria-flecha { transform: translateX(4px); color: var(--accent); }
+
+/* SECCIONES DE PRODUCTOS */
+.section-heading { max-width: 1140px; margin: 3.5rem auto 1.6rem; padding: 0 1.5rem; display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.section-heading h2 { font-family: var(--font-display); font-size: 2.1rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 500; }
+.section-heading .section-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--accent), transparent); margin-left: 1.5rem; }
+.grid { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.8rem; }
+.section-empty-msg { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem 1rem; color: var(--gray-text); font-size: 0.95rem; }
+
+.card { background: var(--white); border-radius: var(--radius); padding: 1.4rem; border: 1px solid var(--gray-border); display: flex; flex-direction: column; box-shadow: var(--shadow-soft); transition: transform var(--transition), box-shadow var(--transition); opacity: 0; transform: translateY(24px); }
+.card.visible { animation: revealCard 0.6s ease forwards; }
+@keyframes revealCard { to { opacity: 1; transform: translateY(0); } }
+.card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); }
+
+.card-img-wrap { position: relative; width: 100%; height: 210px; border-radius: 10px; margin-bottom: 1.1rem; overflow: hidden; background: linear-gradient(160deg, var(--primary) 0%, var(--primary-soft) 100%); }
+.card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.card:hover .card-img-wrap img { transform: scale(1.06); }
+.card-img-wrap.no-image img { display: none; }
+.card-img-wrap .placeholder-icon { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
+.card-img-wrap.no-image .placeholder-icon { display: flex; }
+.card-img-wrap .placeholder-icon svg { width: 56px; height: 56px; stroke: var(--accent); fill: none; stroke-width: 1.1; opacity: 0.85; }
+
+.badge-nuevo { position: absolute; top: 10px; left: 10px; background: var(--accent); color: var(--primary); font-size: 0.66rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 20px; z-index: 2; }
+
+.card-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; margin-bottom: 0.4rem; }
+.card-desc { font-size: 0.88rem; color: var(--gray-text); flex-grow: 1; margin-bottom: 1rem; }
+.card-price { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; margin-bottom: 1rem; }
+.card-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+.card-actions .btn { text-align: center; padding: 0.75rem 1rem; }
+
+/* PÁGINA DE PRODUCTO */
+.breadcrumb { max-width: 1140px; margin: 1.6rem auto 0; padding: 0 1.5rem; font-size: 0.82rem; color: var(--gray-text); letter-spacing: 0.5px; }
+.breadcrumb a { color: var(--accent-dark); cursor: pointer; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+.producto-detalle { max-width: 1140px; margin: 2rem auto 4rem; padding: 0 1.5rem; display: grid; grid-template-columns: 1.1fr 1fr; gap: 3rem; align-items: start; }
+
+.producto-imagen { position: relative; border-radius: var(--radius); overflow: hidden; background: linear-gradient(160deg, var(--primary) 0%, var(--primary-soft) 100%); aspect-ratio: 4 / 5; box-shadow: var(--shadow-soft); }
+.producto-imagen img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+.producto-imagen:hover img { transform: scale(1.04); }
+.producto-imagen.no-image img { display: none; }
+.producto-imagen .placeholder-icon { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
+.producto-imagen.no-image .placeholder-icon { display: flex; }
+.producto-imagen .placeholder-icon svg { width: 110px; height: 110px; stroke: var(--accent); fill: none; stroke-width: 1; opacity: 0.85; }
+
+.producto-info .eyebrow { margin-bottom: 0.6rem; display: block; }
+.producto-info h1 { font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; line-height: 1.15; margin-bottom: 1rem; }
+.producto-precio { font-family: var(--font-display); font-size: 2rem; font-weight: 600; color: var(--primary); margin-bottom: 1.2rem; }
+.producto-desc { color: #444; font-size: 0.98rem; margin-bottom: 1.6rem; }
+.producto-info .btn-whatsapp { max-width: 320px; margin-bottom: 2.2rem; }
+
+.piramide { background: var(--primary); border-radius: var(--radius); padding: 2rem 1.6rem 1.8rem; color: var(--white); }
+.piramide h3 { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); text-align: center; margin-bottom: 1.4rem; }
+.piramide-niveles { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+.piramide-nivel { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; padding: 0.9rem 1rem 1.1rem; border-bottom: 1px dashed rgba(212, 175, 55, 0.25); width: 100%; }
+.piramide-nivel:last-child { border-bottom: none; }
+.piramide-nivel .nivel-label { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: #b8b8b8; }
+.nivel-barra { height: 4px; border-radius: 4px; background: linear-gradient(to right, var(--accent-dark), var(--accent)); margin-bottom: 0.3rem; }
+.nivel-salida .nivel-barra { width: 55%; }
+.nivel-corazon .nivel-barra { width: 75%; }
+.nivel-fondo .nivel-barra { width: 95%; }
+.piramide-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.piramide-tag { font-size: 0.78rem; border: 1px solid rgba(212, 175, 55, 0.5); color: var(--accent-light); padding: 0.3rem 0.75rem; border-radius: 20px; }
+
+.relacionados-heading { margin-top: 2rem; }
+
+.producto-no-encontrado { max-width: 640px; margin: 5rem auto; padding: 0 1.5rem; text-align: center; }
+.producto-no-encontrado h1 { font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 1rem; }
+.producto-no-encontrado p { color: var(--gray-text); margin-bottom: 1.6rem; }
+
+/* FOOTER */
+.site-footer { background-color: var(--primary); color: #ccc; margin-top: 4rem; padding: 3rem 1.5rem 2rem; }
+.footer-inner { max-width: 1140px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+.footer-brand .logo { margin-bottom: 0.6rem; }
+.footer-brand p { max-width: 280px; font-size: 0.88rem; color: #a8a8a8; }
+.footer-col h4 { font-family: var(--font-body); font-size: 0.82rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.9rem; }
+.footer-col a { display: block; font-size: 0.88rem; color: #b8b8b8; margin-bottom: 0.55rem; transition: color var(--transition); cursor: pointer; }
+.footer-col a:hover { color: var(--accent); }
+.footer-social { display: flex; gap: 0.9rem; margin-top: 0.4rem; }
+.footer-social a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(212, 175, 55, 0.4); display: flex; align-items: center; justify-content: center; }
+.footer-social svg { width: 15px; height: 15px; fill: var(--accent); }
+.footer-social a:hover { background-color: var(--accent); }
+.footer-social a:hover svg { fill: var(--primary); }
+.footer-bottom { max-width: 1140px; margin: 1.4rem auto 0; text-align: center; font-size: 0.8rem; color: #888; }
+
+.whatsapp-float { position: fixed; bottom: 1.6rem; right: 1.6rem; width: 56px; height: 56px; border-radius: 50%; background-color: #1a1a1a; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-hover); z-index: 90; cursor: pointer; transition: transform var(--transition); }
+.whatsapp-float:hover { transform: scale(1.08); }
+.whatsapp-float svg { width: 26px; height: 26px; fill: var(--accent); }
+
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 860px) { .producto-detalle { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .nav-links {
+    position: fixed; top: 64px; left: 0; right: 0;
+    background: rgba(10,10,10,0.97); backdrop-filter: blur(20px);
+    flex-direction: column; padding: 1.2rem 1.5rem 1.8rem; gap: 0.2rem;
+    transform: translateY(-120%); transition: transform var(--transition);
+    border-bottom: 1px solid rgba(212,175,55,0.2); z-index: 99;
+  }
+  .nav-links.open { transform: translateY(0); }
+  .nav-links a {
+    padding: 0.8rem 0; font-size: 0.9rem; letter-spacing: 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.05); width: 100%;
+  }
+  .nav-links a:last-of-type { border-bottom: none; }
+  .nav-toggle { display: flex; }
+  .nav-search { display: none; }
+  /* Botones nav en móvil — fila compacta */
+  .nav-buttons-mobile {
+    display: flex; gap: 0.6rem; padding-top: 1rem;
+    border-top: 1px solid rgba(212,175,55,0.15); margin-top: 0.4rem;
+  }
+  .nav-btn-cuenta {
+    flex: 1; text-align: center; font-size: 0.78rem;
+    padding: 0.6rem 0.8rem; width: auto; align-self: auto;
+  }
+  .nav-buttons-mobile {
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.nav-carrito-btn {
+    flex: 1; text-align: center; justify-content: center;
+    font-size: 0.78rem; padding: 0.6rem 0.8rem;
+  }
+  .nav-bar { flex-wrap: nowrap; gap: 0.8rem; }
+  .hero { padding: 3.5rem 1.2rem 4rem; }
+  .section-heading { flex-direction: column; align-items: flex-start; }
+  .section-heading .section-line { display: none; }
+  .footer-inner { flex-direction: column; }
+  .grid { grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .card-body { padding: 0.9rem 1rem 1.1rem; }
+  .card-title { font-size: 1.1rem; }
+}
+@media (max-width: 480px) {
+  .categorias-grid { gap: 1.4rem; }
+  .categoria-circulo { width: 80px; height: 80px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* BADGE INSPIRACIÓN */
+.badge-inspiracion {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(26,26,26,0.85);
+  color: var(--accent); font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 0.28rem 0.65rem; border-radius: 20px;
+  border: 1px solid rgba(212,175,55,0.5); z-index: 2;
+}
+
+/* SELECTOR DE TAMAÑO en tarjetas */
+.size-selector { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; }
+.size-btn {
+  flex: 1; padding: 0.45rem 0.4rem; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--gray-border); background: var(--bg);
+  font-family: var(--font-body); font-size: 0.78rem; font-weight: 500;
+  color: var(--gray-text); transition: all var(--transition); text-align: center;
+  line-height: 1.3;
+}
+.size-btn:hover { border-color: var(--accent); color: var(--primary); }
+.size-btn.selected { background: var(--accent); color: var(--primary); border-color: var(--accent); font-weight: 600; }
+.size-btn .size-price { display: block; font-size: 0.85rem; font-weight: 600; color: inherit; margin-top: 1px; }
+
+/* AVISO de aceites en página de producto */
+.aceite-aviso {
+  display: flex; align-items: flex-start; gap: 0.7rem;
+  background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.4rem; font-size: 0.84rem; color: #555;
+}
+.aceite-aviso svg { flex-shrink: 0; width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 1.8; margin-top: 1px; }
+.aceite-aviso strong { color: var(--primary); }
+
+/* SELECTOR tamaño en página de producto */
+.producto-size-selector { display: flex; gap: 0.75rem; margin-bottom: 1.4rem; }
+.producto-size-btn {
+  flex: 1; padding: 0.75rem 0.5rem; border-radius: 10px; cursor: pointer;
+  border: 2px solid var(--gray-border); background: var(--bg);
+  font-family: var(--font-body); font-size: 0.85rem; font-weight: 500;
+  color: var(--gray-text); transition: all var(--transition); text-align: center;
+}
+.producto-size-btn:hover { border-color: var(--accent); }
+.producto-size-btn.selected { border-color: var(--accent); background: var(--accent); color: var(--primary); font-weight: 700; }
+.producto-size-btn .psb-ml { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; display: block; margin-bottom: 2px; }
+.producto-size-btn .psb-price { font-size: 1.15rem; font-family: var(--font-display); font-weight: 700; }
+
+/* NOTA pie tarjeta */
+.card-note { font-size: 0.72rem; color: var(--gray-text); text-align: center; margin-top: 0.3rem; letter-spacing: 0.3px; }
+
+
+/* ======= MODAL AUTH ======= */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 999;
+  background: rgba(10,10,10,0.75); align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--white); border-radius: 18px; padding: 2.5rem 2rem;
+  width: 100%; max-width: 420px; margin: 1rem;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+}
+.modal-box h2 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.3rem; color: var(--primary); }
+.modal-box .modal-sub { font-size: 0.88rem; color: var(--gray-text); margin-bottom: 1.6rem; }
+.modal-field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+.modal-field label { font-size: 0.8rem; font-weight: 500; color: var(--primary); letter-spacing: 0.5px; }
+.modal-field input {
+  padding: 0.75rem 1rem; border-radius: 10px;
+  border: 1px solid var(--gray-border); background: var(--bg);
+  font-family: var(--font-body); font-size: 0.92rem; outline: none;
+  transition: border-color var(--transition);
+}
+.modal-field input:focus { border-color: var(--accent); }
+.modal-btn {
+  width: 100%; padding: 0.9rem; border-radius: 30px; border: none; cursor: pointer;
+  background: var(--accent); color: var(--primary);
+  font-family: var(--font-body); font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 0.5rem; transition: background var(--transition), transform var(--transition);
+}
+.modal-btn:hover { background: var(--accent-light); transform: translateY(-2px); }
+.modal-toggle { text-align: center; margin-top: 1.2rem; font-size: 0.85rem; color: var(--gray-text); }
+.modal-toggle a { color: var(--accent); cursor: pointer; font-weight: 500; }
+.modal-close {
+  float: right; background: none; border: none; font-size: 1.4rem;
+  cursor: pointer; color: var(--gray-text); margin-top: -0.5rem;
+}
+.modal-error { color: #c0392b; font-size: 0.83rem; margin-top: 0.5rem; display: none; }
+.modal-error.show { display: block; }
+
+/* ======= PANEL CUENTA ======= */
+.cuenta-overlay {
+  display: none; position: fixed; inset: 0; z-index: 998;
+  background: rgba(10,10,10,0.6);
+}
+.cuenta-overlay.open { display: block; }
+.cuenta-panel {
+  position: fixed; top: 0; right: -480px; width: 100%; max-width: 460px; height: 100%;
+  background: var(--white); z-index: 999; overflow-y: auto;
+  transition: right 0.4s cubic-bezier(0.22,1,0.36,1);
+  padding: 2rem 1.8rem; box-shadow: -10px 0 40px rgba(0,0,0,0.2);
+}
+.cuenta-panel.open { right: 0; }
+.cuenta-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.8rem; }
+.cuenta-header h2 { font-family: var(--font-display); font-size: 1.6rem; }
+.cuenta-cerrar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-text); }
+.cuenta-saludo { font-size: 0.9rem; color: var(--gray-text); margin-bottom: 1.5rem; }
+.cuenta-saludo strong { color: var(--primary); }
+.pedido-card {
+  border: 1px solid var(--gray-border); border-radius: 12px;
+  padding: 1rem 1.2rem; margin-bottom: 1rem;
+}
+.pedido-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; }
+.pedido-nombre { font-weight: 600; font-size: 0.95rem; }
+.pedido-tamano { font-size: 0.78rem; color: var(--gray-text); }
+.pedido-estado {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 0.2rem 0.65rem; border-radius: 20px;
+}
+.estado-pendiente { background: #fff3cd; color: #856404; }
+.estado-pagado { background: #d1f5d3; color: #1a6b22; }
+.estado-parcial { background: #fde8d8; color: #8a3a08; }
+.pedido-precio-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--gray-text); margin-top: 0.4rem; }
+.pedido-precio-row strong { color: var(--primary); }
+.cuenta-vacio { text-align: center; padding: 3rem 1rem; color: var(--gray-text); }
+.cuenta-vacio svg { width: 48px; height: 48px; stroke: var(--gray-border); margin: 0 auto 1rem; }
+.btn-cerrar-sesion {
+  width: 100%; margin-top: 2rem; padding: 0.8rem; border-radius: 30px;
+  border: 1px solid var(--gray-border); background: var(--bg);
+  font-family: var(--font-body); font-size: 0.85rem; cursor: pointer;
+  color: #c0392b; font-weight: 500; transition: all var(--transition);
+}
+.btn-cerrar-sesion:hover { background: #fff0f0; border-color: #c0392b; }
+
+/* Nav btn cuenta */
+.nav-btn-cuenta {
+  background: none; border: 1px solid rgba(212,175,55,0.5); color: var(--accent);
+  border-radius: 20px; padding: 0.4rem 1rem; font-family: var(--font-body);
+  font-size: 0.78rem; letter-spacing: 0.5px; cursor: pointer;
+  transition: all var(--transition); white-space: nowrap;
+  display: inline-block; width: auto; align-self: flex-start;
+}
+.nav-btn-cuenta:hover { background: rgba(212,175,55,0.12); }
+
+
+/* ══════════════════════════════════════════
+   CARRITO DE COMPRAS
+══════════════════════════════════════════ */
+.nav-buttons-mobile {
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.nav-carrito-btn {
+  background: none; border: 1px solid rgba(212,175,55,0.4); color: var(--accent);
+  border-radius: 20px; padding: 0.38rem 0.9rem; font-family: var(--font-body);
+  font-size: 0.78rem; letter-spacing: 0.5px; cursor: pointer;
+  transition: all var(--transition); display: flex; align-items: center; gap: 0.4rem;
+  position: relative; white-space: nowrap;
+}
+.nav-carrito-btn:hover { background: rgba(212,175,55,0.1); }
+.carrito-count {
+  background: var(--accent); color: #0a0a0a; font-size: 0.65rem; font-weight: 700;
+  width: 18px; height: 18px; border-radius: 50%; display: inline-flex;
+  align-items: center; justify-content: center; display: none;
+}
+.carrito-count.visible { display: inline-flex; }
+
+/* Panel carrito */
+.carrito-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:997; }
+.carrito-overlay.open { display:block; }
+.carrito-panel {
+  position:fixed; top:0; right:-500px; width:100%; max-width:460px; height:100%;
+  background:#141414; border-left:1px solid rgba(212,175,55,0.2);
+  z-index:998; display:flex; flex-direction:column;
+  transition:right 0.4s cubic-bezier(0.22,1,0.36,1);
+  box-shadow:-20px 0 60px rgba(0,0,0,0.8);
+  color:#f0ece4;
+}
+.carrito-panel.open { right:0; }
+.carrito-header {
+  padding:1.6rem 1.8rem 1.2rem; border-bottom:1px solid rgba(212,175,55,0.15);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.carrito-header h2 { font-family:var(--font-display); font-size:1.6rem; font-weight:300; color:#f0ece4; }
+.carrito-cerrar { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#999; transition:color var(--transition); }
+.carrito-cerrar:hover { color:var(--accent); }
+.carrito-items { flex:1; overflow-y:auto; padding:1.2rem 1.8rem; }
+.carrito-vacio { text-align:center; padding:3rem 1rem; color:#888; }
+.carrito-vacio svg { width:50px; height:50px; stroke:rgba(212,175,55,0.2); margin:0 auto 1rem; }
+.carrito-item {
+  display:flex; gap:1rem; align-items:flex-start;
+  padding:1rem 0; border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.carrito-item:last-child { border-bottom:none; }
+.carrito-item-icon {
+  width:48px; height:48px; border-radius:8px; flex-shrink:0;
+  background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.25);
+  display:flex; align-items:center; justify-content:center;
+}
+.carrito-item-icon svg { width:22px; height:22px; stroke:var(--accent); fill:none; stroke-width:1.2; }
+.carrito-item-info { flex:1; }
+.carrito-item-nombre { font-size:0.95rem; font-weight:600; color:#f0ece4; margin-bottom:0.25rem; }
+.carrito-item-detalle { font-size:0.8rem; color:#aaa; }
+.carrito-item-precio { font-family:var(--font-display); font-size:1.1rem; color:var(--accent); font-weight:600; margin-top:0.3rem; }
+.carrito-item-quitar { background:none; border:none; color:#888; font-size:1.2rem; cursor:pointer; padding:0.2rem; transition:color var(--transition); flex-shrink:0; }
+.carrito-item-quitar:hover { color:#e74c3c; }
+.carrito-footer {
+  padding:1.4rem 1.8rem; border-top:1px solid rgba(212,175,55,0.15);
+  background:rgba(0,0,0,0.4);
+}
+.carrito-total-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem; }
+.carrito-total-label { font-size:0.78rem; letter-spacing:1.5px; text-transform:uppercase; color:#aaa; }
+.carrito-total-val { font-family:var(--font-display); font-size:1.8rem; color:var(--accent); font-weight:600; }
+.btn-pedir-carrito {
+  width:100%; padding:1rem; border-radius:30px; border:none; cursor:pointer;
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  color:#fff; font-family:var(--font-body); font-size:0.85rem;
+  font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
+  display:flex; align-items:center; justify-content:center; gap:0.6rem;
+  transition:opacity var(--transition), transform var(--transition);
+}
+.btn-pedir-carrito:hover { opacity:0.9; transform:translateY(-2px); }
+.btn-pedir-carrito svg { width:20px; height:20px; fill:#fff; }
+.btn-vaciar {
+  width:100%; margin-top:0.7rem; padding:0.6rem; border-radius:30px;
+  background:none; border:1px solid rgba(255,255,255,0.08);
+  color:#555; font-family:var(--font-body); font-size:0.78rem; cursor:pointer;
+  transition:all var(--transition);
+}
+.btn-vaciar:hover { border-color:rgba(231,76,60,0.4); color:#e74c3c; }
+
+/* Botón agregar al carrito en tarjetas */
+.btn-carrito {
+  background:rgba(212,175,55,0.08); color:var(--accent);
+  border:1px solid rgba(212,175,55,0.3); width:100%;
+  display:flex; align-items:center; justify-content:center; gap:0.5rem;
+  font-family:var(--font-body); font-size:0.78rem; font-weight:500;
+  letter-spacing:1px; text-transform:uppercase; padding:0.72rem 1rem;
+  border-radius:30px; cursor:pointer; transition:all var(--transition);
+}
+.btn-carrito:hover { background:rgba(212,175,55,0.15); border-color:var(--accent); }
+.btn-carrito svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* ══════════════════════════════════════════
+   MODAL DE PAGO
+══════════════════════════════════════════ */
+.pago-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1100; align-items:center; justify-content:center; padding:1rem; }
+.pago-overlay.open { display:flex; }
+.pago-modal { background:#111; border:1px solid rgba(212,175,55,0.3); border-radius:16px; width:100%; max-width:420px; max-height:90vh; overflow-y:auto; }
+.pago-header { display:flex; align-items:center; justify-content:space-between; padding:1.2rem 1.5rem; border-bottom:1px solid rgba(212,175,55,0.15); }
+.pago-header h3 { font-family:var(--font-display); font-size:1.3rem; font-weight:400; color:var(--accent); }
+.pago-cerrar { background:none; border:none; color:#666; font-size:1.4rem; cursor:pointer; }
+.pago-body { padding:1.4rem 1.5rem; }
+.pago-section { margin-bottom:1.4rem; }
+.pago-section-title { font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:0.8rem; display:flex; align-items:center; gap:0.5rem; }
+.pago-section-title::before { content:""; display:block; width:16px; height:1px; background:var(--accent); }
+.pago-dato { display:flex; align-items:center; justify-content:space-between; padding:0.7rem 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.pago-dato:last-child { border-bottom:none; }
+.pago-dato-label { font-size:0.82rem; color:#888; }
+.pago-dato-valor { font-size:0.92rem; color:var(--white); font-weight:500; display:flex; align-items:center; gap:0.5rem; }
+.pago-copy-btn { background:none; border:1px solid rgba(212,175,55,0.25); color:var(--accent); border-radius:6px; padding:0.25rem 0.5rem; font-size:0.7rem; cursor:pointer; transition:all 0.2s; }
+.pago-copy-btn:hover { background:rgba(212,175,55,0.15); }
+.pago-total-box { background:rgba(212,175,55,0.06); border:1px solid rgba(212,175,55,0.2); border-radius:10px; padding:1rem 1.2rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; }
+.pago-total-box .label { font-size:0.78rem; text-transform:uppercase; letter-spacing:1.5px; color:#888; }
+.pago-total-box .valor { font-family:var(--font-display); font-size:1.8rem; color:var(--accent); }
+.pago-copiar-todo { width:100%; padding:0.85rem; background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.3); color:var(--accent); border-radius:10px; font-size:0.85rem; letter-spacing:1px; cursor:pointer; transition:all 0.2s; margin-bottom:1rem; }
+.pago-copiar-todo:hover { background:rgba(212,175,55,0.2); }
+.pago-confirmar-btn { width:100%; padding:1rem; background:var(--accent); color:var(--primary); border:none; border-radius:10px; font-size:0.9rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+.pago-confirmar-btn:hover { background:var(--accent-light); transform:translateY(-2px); }
+.pago-input { width:100%; background:#1a1a1a; border:1px solid rgba(212,175,55,0.2); border-radius:8px; padding:0.75rem 1rem; color:var(--white); font-size:0.9rem; margin-top:0.4rem; box-sizing:border-box; }
+.pago-input:focus { outline:none; border-color:var(--accent); }
+.pago-input::placeholder { color:#555; }
+
+/* ══════════════════════════════════════════
+   ESTADO DE CUENTA VISUAL
+══════════════════════════════════════════ */
+.pedido-card {
+  border:1px solid rgba(212,175,55,0.15); border-radius:12px;
+  padding:1.1rem 1.3rem; margin-bottom:0.9rem;
+  background:rgba(255,255,255,0.02);
+}
+.pedido-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.8rem; }
+.pedido-nombre { font-weight:600; font-size:0.95rem; color:var(--white); }
+.pedido-tamano { font-size:0.76rem; color:#666; margin-top:0.15rem; }
+.pedido-estado { font-size:0.65rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:0.22rem 0.65rem; border-radius:20px; }
+.estado-pendiente { background:rgba(230,126,34,0.15); color:#e67e22; border:1px solid rgba(230,126,34,0.3); }
+.estado-pagado { background:rgba(46,204,113,0.12); color:#2ecc71; border:1px solid rgba(46,204,113,0.3); }
+.estado-parcial { background:rgba(212,175,55,0.12); color:var(--accent); border:1px solid rgba(212,175,55,0.3); }
+
+/* Barra de progreso de pago */
+.pago-progreso { margin:0.6rem 0; }
+.pago-barra-wrap { height:6px; background:rgba(255,255,255,0.06); border-radius:6px; overflow:hidden; margin-bottom:0.5rem; }
+.pago-barra-fill { height:100%; border-radius:6px; background:linear-gradient(90deg,var(--accent),#f0d060); transition:width 1s ease; }
+.pago-numeros { display:flex; justify-content:space-between; font-size:0.78rem; }
+.pago-numeros .pagado { color:#2ecc71; }
+.pago-numeros .saldo { color:#e67e22; }
+.pago-numeros .total { color:#666; }
+
+.cuenta-vacio { text-align:center; padding:3rem 1rem; color:#555; }
+.cuenta-vacio svg { width:48px; height:48px; stroke:rgba(212,175,55,0.2); margin:0 auto 1rem; fill:none; }
+.btn-cerrar-sesion {
+  width:100%; margin-top:1.5rem; padding:0.75rem; border-radius:30px;
+  border:1px solid rgba(255,255,255,0.08); background:none;
+  font-family:var(--font-body); font-size:0.82rem; cursor:pointer;
+  color:#e74c3c; transition:all var(--transition);
+}
+.btn-cerrar-sesion:hover { background:rgba(231,76,60,0.08); border-color:rgba(231,76,60,0.3); }
+
+
+.btn-google {
+  width: 100%; padding: 0.85rem; border-radius: 30px;
+  border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+  color: var(--white); font-family: var(--font-body); font-size: 0.88rem;
+  font-weight: 500; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 0.75rem; transition: all var(--transition);
+  margin-bottom: 1rem;
+}
+.btn-google:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.25); }
+.modal-divider {
+  display: flex; align-items: center; gap: 0.8rem;
+  margin-bottom: 1rem; color: #444; font-size: 0.78rem;
+}
+.modal-divider::before, .modal-divider::after {
+  content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.07);
+}
+
+</style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="nav-bar">
+        <a class="logo" onclick="navegarInicio()">Empire <span>Parfum</span></a>
+
+        <div class="nav-search">
+            <input type="text" id="buscador" placeholder="Buscar fragancia...">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+
+        <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-links" id="nav-links">
+            <a onclick="irASeccion('caballeros')">Caballeros</a>
+            <a onclick="irASeccion('damas')">Damas</a>
+            <a onclick="irASeccion('mayoristas')">Mayoristas</a>
+            <div class="nav-buttons-mobile">
+              <button class="nav-carrito-btn" onclick="abrirCarrito()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                Carrito <span class="carrito-count" id="carrito-count">0</span>
+              </button>
+              <button class="nav-btn-cuenta" id="nav-auth-btn" onclick="abrirAuth()">Ingresar</button>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<!-- ============================= VISTA: INICIO ============================= -->
+<main id="vista-inicio">
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-ornament">
+                <div class="hero-ornament-line"></div>
+                <div class="hero-ornament-diamond"></div>
+                <div class="hero-ornament-line right"></div>
+            </div>
+            <span class="eyebrow hero-eyebrow">Catálogo Oficial Exclusivo</span>
+            <h1>Empire <em>Parfum</em></h1>
+            <p class="hero-tagline">Haute Parfumerie — Inspiración sin límites</p>
+            <div class="hero-divider"></div>
+            <p class="subtitle">Fragancias en <strong style="color:var(--accent)">base de aceites</strong>, inspiradas en las grandes casas de perfumería. Una alternativa duradera con excelente fijación y estela.</p>
+            <div class="hero-cta">
+                <a class="btn btn-gold" onclick="irASeccion('caballeros')">Ver Catálogo</a>
+                <a class="btn btn-outline" onclick="irASeccion('mayoristas')">Soy Mayorista</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-num">100+</div>
+                    <div class="hero-stat-label">Fragancias</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num">2</div>
+                    <div class="hero-stat-label">Tamaños</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num">24h</div>
+                    <div class="hero-stat-label">Fijación</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="categorias reveal" id="categorias">
+        <div class="container">
+            <div class="categorias-grid" id="categorias-grid"></div>
+        </div>
+    </section>
+
+    <p class="section-empty-msg" id="sin-resultados" style="display:none;">
+        No encontramos fragancias que coincidan con tu búsqueda. Intenta con otro nombre.
+    </p>
+
+    <section id="caballeros">
+        <div class="section-heading" id="heading-caballeros">
+            <h2>Caballeros</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="grid" id="grid-caballeros"></div>
+    </section>
+
+    <section id="damas">
+        <div class="section-heading" id="heading-damas">
+            <h2>Damas</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="grid" id="grid-damas"></div>
+    </section>
+
+    <section id="mayoristas">
+        <div class="section-heading" id="heading-mayoristas">
+            <h2>Mayoristas y Lotes</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="grid" id="grid-mayoristas"></div>
+    </section>
+
+</main>
+
+<!-- ============================= VISTA: PRODUCTO ============================= -->
+<main id="vista-producto" style="display:none;">
+
+    <p class="breadcrumb">
+        <a onclick="navegarInicio()">Inicio</a> /
+        <a id="breadcrumb-categoria" onclick="return false;">Categoría</a> /
+        <span id="breadcrumb-nombre"></span>
+    </p>
+
+    <div id="producto-contenido">
+        <div class="producto-detalle">
+            <div class="producto-imagen" id="producto-imagen-wrap"></div>
+
+            <div class="producto-info">
+                <span class="eyebrow" id="producto-eyebrow"></span>
+                <h1 id="producto-nombre"></h1>
+
+                <div class="aceite-aviso">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span><strong>Perfume en base de aceites</strong> — Inspirado en la fragancia original. No es un producto oficial de la marca. Misma esencia, sin alcohol.</span>
+                </div>
+
+                <div class="producto-size-selector" id="producto-size-selector">
+                  <div class="producto-size-btn selected" id="psb-30" onclick="elegirTamanoProducto('30ml')">
+                    <span class="psb-ml">30 ml</span>
+                    <span class="psb-price" id="psb-price-30">$7.00</span>
+                  </div>
+                  <div class="producto-size-btn" id="psb-60" onclick="elegirTamanoProducto('60ml')">
+                    <span class="psb-ml">60 ml</span>
+                    <span class="psb-price" id="psb-price-60">$14.00</span>
+                  </div>
+                </div>
+
+                <p class="producto-desc" id="producto-desc"></p>
+
+                <button class="btn btn-whatsapp" id="producto-whatsapp-btn"></button>
+
+                <div class="piramide">
+                    <h3>Pirámide Olfativa</h3>
+                    <div class="piramide-niveles" id="piramide-niveles"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-heading relacionados-heading" id="relacionados-heading">
+            <h2>También te puede interesar</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="grid" id="relacionados-grid"></div>
+    </div>
+
+    <div class="producto-no-encontrado" id="producto-no-encontrado" style="display:none;">
+        <h1>Producto no encontrado</h1>
+        <p>El perfume que buscas no existe o fue removido del catálogo.</p>
+        <a class="btn btn-gold" onclick="navegarInicio()">Volver al Catálogo</a>
+    </div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="logo">Empire <span>Parfum</span></div>
+            <p>Fragancias artesanales en base de aceites, inspiradas en las grandes marcas. No somos distribuidores oficiales. Pedidos por WhatsApp.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Catálogo</h4>
+            <a onclick="irASeccion('caballeros')">Caballeros</a>
+            <a onclick="irASeccion('damas')">Damas</a>
+            <a onclick="irASeccion('mayoristas')">Mayoristas y Lotes</a>
+        </div>
+        <div class="footer-col">
+            <h4>Síguenos</h4>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5.9.4.4.7.9.9 1.5.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.5 1-.9 1.5-.4.4-.9.7-1.5.9-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.5-1.5-.9-.4-.4-.7-.9-.9-1.5-.2-.5-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.5-1 .9-1.5.4-.4.9-.7 1.5-.9.5-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4zm5.2-8.4a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg></a>
+                <a href="#" aria-label="WhatsApp" onclick="pedirWhatsApp('Consulta general', 'Quisiera más información'); return false;">
+                    <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.1.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5C11 9 10.4 7.6 10.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.7 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    <p class="footer-bottom">&copy; 2026 Empire Parfum. Todos los derechos reservados.</p>
+</footer>
+
+<a class="whatsapp-float" onclick="pedirWhatsApp('Consulta general', 'Quisiera más información')" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.1.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5C11 9 10.4 7.6 10.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.7 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>
+</a>
+
+<script>
+/* ==========================================================================
+   EMPIRE PARFUM — Datos del catálogo
+   ========================================================================== */
+
+const CATEGORIAS = [
+  { id: "caballeros", nombre: "Caballeros", etiqueta: "Para él", icono: "caballeros" },
+  { id: "damas", nombre: "Damas", etiqueta: "Para ella", icono: "damas" },
+  { id: "mayoristas", nombre: "Mayoristas y Lotes", etiqueta: "Para revender", icono: "mayoristas" }
+];
+
+let PRODUCTOS = [];
+
+async function cargarCatalogoDesdeDB() {
+  try {
+    const supa = window.supabase ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
+    if (!supa) return false;
+    const { data, error } = await supa.from("productos").select("*").order("categoria").order("nombre");
+    if (error || !data || data.length === 0) return false;
+    PRODUCTOS = data.map(p => {
+      // Pirámide olfativa: primero usa campos separados, fallback al campo notas genérico
+      const parsearNotas = (str) => (str || "").split(",").map(n => n.trim()).filter(Boolean);
+      const salida   = parsearNotas(p.notas_salida);
+      const corazon  = parsearNotas(p.notas_corazon);
+      const fondo    = parsearNotas(p.notas_fondo);
+      // Si no hay campos separados, mete las notas genéricas en fondo como fallback
+      const fondoFinal = fondo.length ? fondo : parsearNotas(p.notas);
+      return {
+        id: p.nombre.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-"),
+        nombre: p.nombre,
+        categoria: p.categoria,
+        descripcionCorta: p.descripcion_corta || "",
+        descripcionLarga: p.descripcion_larga || p.descripcion_corta || "",
+        precios: { ml30: parseFloat(p.precio_30ml), ml60: parseFloat(p.precio_60ml) },
+        disponible: p.disponible,
+        nuevo: p.nuevo,
+        imagen: p.imagen || "",
+        notas: { salida, corazon, fondo: fondoFinal }
+      };
+    });
+    return true;
+  } catch(e) {
+    console.warn("Error cargando catálogo desde BD:", e);
+    return false;
+  }
+}
+
+
+function obtenerProductoPorId(id) { return PRODUCTOS.find((p) => p.id === id) || null; }
+function obtenerProductosPorCategoria(categoriaId) { return PRODUCTOS.filter((p) => p.categoria === categoriaId); }
+function obtenerRelacionados(producto, limite = 3) {
+  return PRODUCTOS.filter((p) => p.categoria === producto.categoria && p.id !== producto.id).slice(0, limite);
+}
+
+/* ==========================================================================
+   EMPIRE PARFUM — Lógica de la aplicación (SPA con enrutamiento por hash)
+   ========================================================================== */
+
+const WHATSAPP_NUMERO = "584120922761"; // Reemplaza con tu número real de WhatsApp
+
+const ICONOS = {
+  caballeros: `<svg viewBox="0 0 24 24"><path d="M3 17h18M5 17V11l4 3 3-6 3 6 4-3v6"/><rect x="5" y="17" width="14" height="2" rx="1"/></svg>`,
+  damas: `<svg viewBox="0 0 24 24"><path d="M12 3 C12 3 8 6 8 10 C8 13 10 14.5 12 15 C14 14.5 16 13 16 10 C16 6 12 3 12 3Z"/><path d="M8 10 C8 10 5 9 4 11 C3 13 5 15 8 14"/><path d="M16 10 C16 10 19 9 20 11 C21 13 19 15 16 14"/><path d="M9.5 7 C9.5 7 7 6 6 8 C5 10 7 12 9 11"/><path d="M14.5 7 C14.5 7 17 6 18 8 C19 10 17 12 15 11"/><circle cx="12" cy="10" r="2"/></svg>`,
+  mayoristas: `<svg viewBox="0 0 24 24"><path d="M12 3 L20 8 L17 9.5 L12 7 L7 9.5 L4 8 Z"/><path d="M12 7 L12 13"/><path d="M4 8 L4 16 L12 21 L20 16 L20 8"/><path d="M7 9.5 L7 17.5 L12 21"/><path d="M17 9.5 L17 17.5 L12 21"/></svg>`,
+  frasco: `<svg viewBox="0 0 24 24"><path d="M10 3h4M11 3v3.5c0 .6-.3 1.1-.8 1.4C8.8 8.7 8 10 8 11.5V19a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7.5c0-1.5-.8-2.8-2.2-3.6-.5-.3-.8-.8-.8-1.4V3"/><path d="M8 13h8"/></svg>`
+};
+
+function iconoWhatsapp() {
+  return `<svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.1.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5C11 9 10.4 7.6 10.2 7c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.7 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>`;
+}
+
+function marcarSinImagen(imgEl) {
+  imgEl.style.display = "none";
+  imgEl.parentElement.classList.add("no-image");
+}
+
+function pedirWhatsApp(producto, detalles) {
+  const mensaje = `Hola, vengo del catálogo digital de *Empire Parfum*. Me interesa: *${producto}* (${detalles}). ¿Tienen disponibilidad?`;
+  const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, "_blank");
+}
+
+// Estado de tamaño seleccionado por tarjeta
+const _tamanos = {};
+
+function elegirTamano(safeId, tamano, precio) {
+  _tamanos[safeId] = { tamano, precio };
+  const sel = document.getElementById("sel-" + safeId);
+  if (!sel) return;
+  sel.querySelectorAll(".size-btn").forEach((b, i) => {
+    b.classList.toggle("selected", (tamano === "30ml" && i === 0) || (tamano === "60ml" && i === 1));
+  });
+}
+
+function pedirWhatsAppTamano(safeId, nombre, precio30, precio60) {
+  const info = _tamanos[safeId] || { tamano: "30ml", precio: precio30 };
+  const msg = `Hola, vengo del catálogo de *Empire Parfum*. Me interesa:\n*${nombre}* — ${info.tamano}: $${info.precio.toFixed(2)}\n\n¿Tienen disponibilidad? ¿Cuáles son las opciones de pago?`;
+  window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+function crearTarjetaProducto(producto) {
+  const badge   = producto.nuevo ? `<span class="badge-nuevo">Nuevo</span>` : "";
+  const safeId  = producto.id.replace(/[^a-zA-Z0-9_-]/g, "_");
+  return `
+    <div class="card reveal" data-nombre="${producto.nombre.toLowerCase()}">
+      <div class="card-img-wrap">
+        ${badge}
+        <span class="badge-inspiracion">Inspiración</span>
+        <img src="${producto.imagen}" alt="${producto.nombre}" onerror="marcarSinImagen(this)">
+        <div class="placeholder-icon">${ICONOS.frasco}</div>
+      </div>
+      <div class="card-title">${producto.nombre}</div>
+      <div class="card-desc">${producto.descripcionCorta}</div>
+
+      <div class="size-selector" id="sel-${safeId}">
+        <div class="size-btn selected" onclick="elegirTamano('${safeId}','30ml',${producto.precios.ml30})">
+          30 ml<span class="size-price">$${producto.precios.ml30.toFixed(2)}</span>
+        </div>
+        <div class="size-btn" onclick="elegirTamano('${safeId}','60ml',${producto.precios.ml60})">
+          60 ml<span class="size-price">$${producto.precios.ml60.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <a class="btn btn-outline" onclick="verProducto('${producto.id}')">Ver Detalles</a>
+        <button class="btn btn-whatsapp" id="wa-${safeId}"
+          onclick="pedirWhatsAppTamano('${safeId}','${producto.nombre.replace(/'/g, "\\'")}',${producto.precios.ml30},${producto.precios.ml60})">
+          ${iconoWhatsapp()} Solicitar Pedido
+        </button>
+      </div>
+      <button class="btn-carrito" onclick="agregarAlCarrito('${safeId}','${producto.nombre.replace(/'/g, "\\'")}',${producto.precios.ml30},${producto.precios.ml60})">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Agregar al carrito
+      </button>
+      <p class="card-note">🛢️ Perfume en base de aceites — inspirado en la fragancia original</p>
+    </div>
+  `;
+}
+
+/* ---- Navegación de la SPA ---- */
+
+function navegarInicio() { window.location.hash = ""; }
+function verProducto(id) { window.location.hash = `producto/${id}`; }
+function irASeccion(id) {
+  if (window.location.hash.startsWith("#producto/") || window.location.hash === "") {
+    window.location.hash = id;
+  } else {
+    window.location.hash = id;
+  }
+  // Fuerza el enrutamiento aun si el hash no cambia de valor (ej. ya estabas en esa sección)
+  router();
+}
+
+function router() {
+  const hash = window.location.hash;
+  const vistaInicio = document.getElementById("vista-inicio");
+  const vistaProducto = document.getElementById("vista-producto");
+  document.getElementById("nav-links").classList.remove("open");
+
+  if (hash.startsWith("#producto/")) {
+    vistaInicio.style.display = "none";
+    vistaProducto.style.display = "block";
+    const id = hash.replace("#producto/", "");
+    renderizarPaginaProducto(id);
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  } else {
+    vistaProducto.style.display = "none";
+    vistaInicio.style.display = "block";
+    const idSeccion = hash.replace("#", "");
+    if (idSeccion) {
+      const el = document.getElementById(idSeccion);
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 30);
+    }
+  }
+}
+
+/* ---- Vista de inicio ---- */
+
+function renderizarCategorias() {
+  const contenedor = document.getElementById("categorias-grid");
+  contenedor.innerHTML = CATEGORIAS.map((cat) => `
+    <a class="categoria-chip" onclick="irASeccion('${cat.id}')">
+      <div class="categoria-icono-wrap">${ICONOS[cat.icono]}</div>
+      <div class="categoria-texto">
+        <div class="categoria-nombre">${cat.nombre}</div>
+        <div class="categoria-etiqueta">${cat.etiqueta}</div>
+      </div>
+      <span class="categoria-flecha">›</span>
+    </a>
+  `).join("");
+}
+
+function renderizarSeccionesDeProductos() {
+  CATEGORIAS.forEach((cat) => {
+    const grid = document.getElementById(`grid-${cat.id}`);
+    if (!grid) return;
+    grid.innerHTML = obtenerProductosPorCategoria(cat.id).map(crearTarjetaProducto).join("");
+  });
+  observarTarjetas();
+}
+
+function inicializarBusqueda() {
+  const input = document.getElementById("buscador");
+  input.addEventListener("input", () => {
+    if (window.location.hash.startsWith("#producto/")) navegarInicio();
+    const termino = input.value.trim().toLowerCase();
+    let algunaCoincidencia = false;
+
+    CATEGORIAS.forEach((cat) => {
+      const grid = document.getElementById(`grid-${cat.id}`);
+      const heading = document.getElementById(`heading-${cat.id}`);
+      if (!grid || !heading) return;
+
+      let coincidenciasEnCategoria = 0;
+      grid.querySelectorAll(".card").forEach((card) => {
+        const coincide = card.dataset.nombre.includes(termino);
+        card.style.display = coincide ? "" : "none";
+        if (coincide) coincidenciasEnCategoria++;
+      });
+
+      const visible = termino === "" || coincidenciasEnCategoria > 0;
+      heading.style.display = visible ? "" : "none";
+      grid.style.display = visible ? "" : "none";
+      if (coincidenciasEnCategoria > 0) algunaCoincidencia = true;
+    });
+
+    const mensajeVacio = document.getElementById("sin-resultados");
+    mensajeVacio.style.display = (termino !== "" && !algunaCoincidencia) ? "block" : "none";
+  });
+}
+
+/* ---- Menú móvil ---- */
+
+function inicializarMenuMovil() {
+  const toggle = document.getElementById("nav-toggle");
+  const links = document.getElementById("nav-links");
+  toggle.addEventListener("click", () => links.classList.toggle("open"));
+}
+
+/* ---- Revelado al hacer scroll ---- */
+
+function observarTarjetas() {
+  const elementos = document.querySelectorAll(".reveal:not(.visible), .card:not(.visible)");
+  const observador = new IntersectionObserver((entradas) => {
+    entradas.forEach((entrada) => {
+      if (entrada.isIntersecting) {
+        entrada.target.classList.add("visible");
+        observador.unobserve(entrada.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  elementos.forEach((el) => observador.observe(el));
+}
+
+/* ---- Vista de producto ---- */
+
+function nivelPiramide(etiqueta, claseNivel, notas) {
+  return `
+    <div class="piramide-nivel ${claseNivel}">
+      <div class="nivel-label">${etiqueta}</div>
+      <div class="nivel-barra"></div>
+      <div class="piramide-tags">${notas.map((n) => `<span class="piramide-tag">${n}</span>`).join("")}</div>
+    </div>
+  `;
+}
+
+function renderizarPaginaProducto(id) {
+  const producto = obtenerProductoPorId(id);
+  const contenido = document.getElementById("producto-contenido");
+  const noEncontrado = document.getElementById("producto-no-encontrado");
+
+  if (!producto) {
+    contenido.style.display = "none";
+    noEncontrado.style.display = "block";
+    document.title = "Producto no encontrado — Empire Parfum";
+    return;
+  }
+
+  contenido.style.display = "block";
+  noEncontrado.style.display = "none";
+  document.title = `${producto.nombre} — Empire Parfum`;
+
+  const categoria = CATEGORIAS.find((c) => c.id === producto.categoria);
+
+  const bcCategoria = document.getElementById("breadcrumb-categoria");
+  bcCategoria.textContent = categoria ? categoria.nombre : "";
+  bcCategoria.onclick = () => irASeccion(producto.categoria);
+  document.getElementById("breadcrumb-nombre").textContent = producto.nombre;
+
+  document.getElementById("producto-nombre").textContent = producto.nombre;
+  document.getElementById("producto-eyebrow").textContent = categoria ? categoria.etiqueta : "";
+  // Ocultar el div viejo de precio (ahora usamos selector)
+  const precioEl = document.getElementById("producto-precio");
+  if (precioEl) precioEl.style.display = "none";
+  // Actualizar selector de tamaño
+  document.getElementById("psb-price-30").textContent = "$" + producto.precios.ml30.toFixed(2);
+  document.getElementById("psb-price-60").textContent = "$" + producto.precios.ml60.toFixed(2);
+  document.getElementById("psb-30").classList.add("selected");
+  document.getElementById("psb-60").classList.remove("selected");
+  window._productoActual = producto;
+  document.getElementById("producto-desc").textContent = producto.descripcionLarga;
+
+  const imgWrap = document.getElementById("producto-imagen-wrap");
+  imgWrap.className = "producto-imagen";
+  imgWrap.innerHTML = `
+    <img src="${producto.imagen}" alt="${producto.nombre}" onerror="marcarSinImagen(this)">
+    <div class="placeholder-icon">${ICONOS.frasco}</div>
+  `;
+
+  const btnWhatsapp = document.getElementById("producto-whatsapp-btn");
+  btnWhatsapp.innerHTML = `${iconoWhatsapp()} Solicitar por WhatsApp`;
+  btnWhatsapp.onclick = () => {
+    const p = window._productoActual;
+    const t = window._tamanoProducto || '30ml';
+    const pr = t === '30ml' ? p.precios.ml30 : p.precios.ml60;
+    const msg = `Hola, vengo del catálogo de *Empire Parfum*.\nMe interesa: *${p.nombre}* — ${t}: $${pr.toFixed(2)}\n¿Tienen disponibilidad?`;
+    window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  document.getElementById("piramide-niveles").innerHTML =
+    nivelPiramide("Notas de Salida", "nivel-salida", producto.notas.salida) +
+    nivelPiramide("Notas de Corazón", "nivel-corazon", producto.notas.corazon) +
+    nivelPiramide("Notas de Fondo", "nivel-fondo", producto.notas.fondo);
+
+  const relacionados = obtenerRelacionados(producto);
+  const grid = document.getElementById("relacionados-grid");
+  const heading = document.getElementById("relacionados-heading");
+  if (relacionados.length === 0) {
+    heading.style.display = "none";
+    grid.innerHTML = "";
+  } else {
+    heading.style.display = "flex";
+    grid.innerHTML = relacionados.map(crearTarjetaProducto).join("");
+  }
+
+  observarTarjetas();
+}
+
+/* ---- Inicialización ---- */
+
+function elegirTamanoProducto(tamano) {
+  window._tamanoProducto = tamano;
+  document.getElementById("psb-30").classList.toggle("selected", tamano === "30ml");
+  document.getElementById("psb-60").classList.toggle("selected", tamano === "60ml");
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  inicializarMenuMovil();
+  renderizarCategorias();
+  // Cargar catálogo desde Supabase primero, luego renderizar
+  await cargarCatalogoDesdeDB();
+  renderizarSeccionesDeProductos();
+  inicializarBusqueda();
+  router();
+});
+
+window.addEventListener("hashchange", router);
+
+/* =====================================================================
+   SUPABASE — AUTENTICACIÓN Y BASE DE DATOS
+   ===================================================================== */
+
+const SUPA_URL = "https://diwllqituydneqbfyyjj.supabase.co";
+const SUPA_KEY = "sb_publishable_xtOJUOF8rNUXnUp5ban3MQ_9ViyeDQs";
+
+async function loginConGoogle() {
+  const supa = getSupa();
+  if (!supa) return;
+  const { error } = await supa.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: "https://empireparfum.netlify.app" }
+  });
+  if (error) {
+    const e = document.getElementById("login-error");
+    if (e) { e.textContent = "Error al conectar con Google. Intenta con correo."; e.classList.add("show"); }
+  }
+}
+
+async function verificarSesionSupabase() {
+  const supa = getSupa();
+  if (!supa) return;
+  const { data: { session } } = await supa.auth.getSession();
+  if (session?.user) {
+    const user = session.user;
+    // Buscar o crear cliente
+    let { data: existe } = await supa.from("clientes").select("*").eq("email", user.email).maybeSingle();
+    if (!existe) {
+      const nombre = user.user_metadata?.full_name || user.email.split("@")[0];
+      const { data: nuevo } = await supa.from("clientes").insert({
+        nombre, email: user.email, telefono: ""
+      }).select().single();
+      existe = nuevo;
+    }
+    if (existe) {
+      clienteActual = existe;
+      localStorage.setItem("empire_cliente", JSON.stringify(clienteActual));
+      actualizarNavAuth();
+    }
+  }
+}
+
+function getSupa() {
+  if (window.supabase) return window.supabase.createClient(SUPA_URL, SUPA_KEY);
+  return null;
+}
+
+let clienteActual = null;
+
+function cargarSesion() {
+  const guardado = localStorage.getItem("empire_cliente");
+  if (guardado) { clienteActual = JSON.parse(guardado); actualizarNavAuth(); }
+}
+
+function actualizarNavAuth() {
+  const btn = document.getElementById("nav-auth-btn");
+  if (!btn) return;
+  if (clienteActual) { btn.textContent = "Mi Cuenta"; btn.onclick = abrirCuenta; }
+  else { btn.textContent = "Ingresar"; btn.onclick = abrirAuth; }
+}
+
+function abrirAuth() {
+  if (clienteActual) { abrirCuenta(); return; }
+  document.getElementById("modal-auth").classList.add("open");
+}
+
+function cerrarAuth() {
+  document.getElementById("modal-auth").classList.remove("open");
+  const e = document.getElementById("login-error");
+  if (e) e.classList.remove("show");
+}
+
+async function registrarOEntrar() {
+  const email    = document.getElementById("login-email").value.trim();
+  const nombre   = document.getElementById("login-nombre").value.trim();
+  const telefono = document.getElementById("login-telefono").value.trim();
+  const errEl    = document.getElementById("login-error");
+
+  if (!email || !nombre) {
+    errEl.textContent = "Por favor ingresa tu correo y nombre.";
+    errEl.classList.add("show"); return;
+  }
+
+  const supa = getSupa();
+  if (!supa) { errEl.textContent = "Error de conexión."; errEl.classList.add("show"); return; }
+
+  let { data: existe } = await supa.from("clientes").select("*").eq("email", email).maybeSingle();
+
+  if (existe) {
+    clienteActual = existe;
+  } else {
+    const { data: nuevo, error } = await supa.from("clientes").insert({ nombre, email, telefono }).select().single();
+    if (error) { errEl.textContent = "No se pudo registrar. Intenta de nuevo."; errEl.classList.add("show"); return; }
+    clienteActual = nuevo;
+  }
+
+  localStorage.setItem("empire_cliente", JSON.stringify(clienteActual));
+  actualizarNavAuth();
+  cerrarAuth();
+  abrirCuenta();
+}
+
+function cerrarSesion() {
+  clienteActual = null;
+  localStorage.removeItem("empire_cliente");
+  actualizarNavAuth();
+  cerrarCuenta();
+}
+
+async function abrirCuenta() {
+  if (!clienteActual) { abrirAuth(); return; }
+  document.getElementById("cuenta-nombre-txt").textContent = clienteActual.nombre;
+  document.getElementById("cuenta-overlay").classList.add("open");
+  document.getElementById("cuenta-panel").classList.add("open");
+  await cargarPedidos();
+}
+
+function cerrarCuenta() {
+  document.getElementById("cuenta-overlay").classList.remove("open");
+  document.getElementById("cuenta-panel").classList.remove("open");
+}
+
+
+
+// Reemplazar pedirWhatsAppTamano con versión que registra pedido
+async function pedirWhatsAppTamano(safeId, nombre, precio30, precio60) {
+  const info = (window._tamanos && window._tamanos[safeId]) ? window._tamanos[safeId] : { tamano: "30ml", precio: precio30 };
+  const msg = "Hola, vengo del catálogo de *Empire Parfum*.\n*" + nombre + "* — " + info.tamano + ": $" + info.precio.toFixed(2) + "\n\n¿Tienen disponibilidad? ¿Cuáles son las opciones de pago?";
+
+  if (clienteActual) {
+    const supa = getSupa();
+    if (supa) {
+      await supa.from("pedidos").insert({
+        cliente_id: clienteActual.id, nombre_perfume: nombre,
+        tamano: info.tamano, precio: info.precio,
+        tipo_pago: "cuotas", estado: "pendiente"
+      });
+    }
+  }
+  window.open("https://wa.me/" + WHATSAPP_NUMERO + "?text=" + encodeURIComponent(msg), "_blank");
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  cargarSesion();
+  await verificarSesionSupabase();
+});
+
+/* =====================================================================
+   CARRITO DE COMPRAS
+   ===================================================================== */
+let carrito = JSON.parse(localStorage.getItem("empire_carrito") || "[]");
+
+function guardarCarrito() {
+  localStorage.setItem("empire_carrito", JSON.stringify(carrito));
+  actualizarContadorCarrito();
+}
+
+function actualizarContadorCarrito() {
+  const count = document.getElementById("carrito-count");
+  if (!count) return;
+  const total = carrito.reduce((s, i) => s + i.cantidad, 0);
+  count.textContent = total;
+  count.classList.toggle("visible", total > 0);
+}
+
+function agregarAlCarrito(safeId, nombre, precio30, precio60) {
+  const info = (window._tamanos && window._tamanos[safeId])
+    ? window._tamanos[safeId]
+    : { tamano: "30ml", precio: precio30 };
+
+  const key = nombre + "-" + info.tamano;
+  const existente = carrito.find(i => i.key === key);
+  if (existente) {
+    existente.cantidad++;
+  } else {
+    carrito.push({ key, nombre, tamano: info.tamano, precio: info.precio, cantidad: 1 });
+  }
+  guardarCarrito();
+  renderCarrito();
+  abrirCarrito();
+}
+
+function quitarDelCarrito(key) {
+  carrito = carrito.filter(i => i.key !== key);
+  guardarCarrito();
+  renderCarrito();
+}
+
+function vaciarCarrito() {
+  carrito = [];
+  guardarCarrito();
+  renderCarrito();
+}
+
+function abrirCarrito() {
+  renderCarrito();
+  document.getElementById("carrito-overlay").classList.add("open");
+  document.getElementById("carrito-panel").classList.add("open");
+}
+
+function cerrarCarrito() {
+  document.getElementById("carrito-overlay").classList.remove("open");
+  document.getElementById("carrito-panel").classList.remove("open");
+}
+
+function renderCarrito() {
+  const wrap   = document.getElementById("carrito-items");
+  const footer = document.getElementById("carrito-footer");
+  const totalEl = document.getElementById("carrito-total");
+  if (!wrap) return;
+
+  if (carrito.length === 0) {
+    wrap.innerHTML = `<div class="carrito-vacio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <p>Tu carrito está vacío</p>
+      <p style="font-size:0.8rem;margin-top:0.4rem">Agrega perfumes desde el catálogo</p>
+    </div>`;
+    if (footer) footer.style.display = "none";
+    return;
+  }
+
+  const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  if (totalEl) totalEl.textContent = "$" + total.toFixed(2);
+  if (footer) footer.style.display = "block";
+
+  wrap.innerHTML = carrito.map(item => `
+    <div class="carrito-item">
+      <div class="carrito-item-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 6 6 6 9c0 4.5 6 13 6 13s6-8.5 6-13c0-3-2-7-6-7z" stroke-width="1.2"/></svg>
+      </div>
+      <div class="carrito-item-info">
+        <div class="carrito-item-nombre">${item.nombre}</div>
+        <div class="carrito-item-detalle">${item.tamano} · Cant: ${item.cantidad}</div>
+        <div class="carrito-item-precio">$${(item.precio * item.cantidad).toFixed(2)}</div>
+      </div>
+      <button class="carrito-item-quitar" onclick="quitarDelCarrito('${item.key}')">×</button>
+    </div>
+  `).join("");
+}
+
+function pedirCarritoPorWhatsApp() {
+  if (carrito.length === 0) return;
+  const lineas = carrito.map(i => `• ${i.nombre} (${i.tamano} x${i.cantidad}) — $${(i.precio * i.cantidad).toFixed(2)}`).join("\n");
+  const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  const msg = `Hola, vengo del catálogo de *Empire Parfum*. Me gustaría hacer el siguiente pedido:\n\n${lineas}\n\n*Total: $${total.toFixed(2)}*\n\n¿Cuáles son las opciones de pago?`;
+
+  // Guardar pedido en BD si hay cliente
+  if (clienteActual) {
+    const supa = getSupa();
+    if (supa) {
+      carrito.forEach(async item => {
+        await supa.from("pedidos").insert({
+          cliente_id: clienteActual.id,
+          nombre_perfume: item.nombre,
+          tamano: item.tamano,
+          precio: item.precio * item.cantidad,
+          tipo_pago: "cuotas",
+          estado: "pendiente"
+        });
+      });
+    }
+  }
+
+  window.open("https://wa.me/" + WHATSAPP_NUMERO + "?text=" + encodeURIComponent(msg), "_blank");
+}
+
+/* =====================================================================
+   ESTADO DE CUENTA — MEJORADO CON BARRA DE PROGRESO
+   ===================================================================== */
+async function cargarPedidos() {
+  const wrap = document.getElementById("cuenta-pedidos-wrap");
+  const supa = getSupa();
+  if (!supa || !clienteActual) return;
+
+  const { data: pedidos, error } = await supa
+    .from("pedidos").select("*, pagos(*)")
+    .eq("cliente_id", clienteActual.id)
+    .order("creado_en", { ascending: false });
+
+  if (error || !pedidos || pedidos.length === 0) {
+    wrap.innerHTML = `<div class="cuenta-vacio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+      <p>Aún no tienes pedidos registrados.</p>
+      <p style="font-size:0.8rem;margin-top:0.5rem;color:#555">Cuando hagas un pedido aparecerá tu estado de cuenta aquí.</p>
+    </div>`;
+    return;
+  }
+
+  // Resumen total
+  let totalDeuda = 0, totalPagado = 0;
+  pedidos.forEach(p => {
+    const pagado = (p.pagos||[]).reduce((s,pg)=>s+parseFloat(pg.monto),0);
+    totalDeuda += parseFloat(p.precio);
+    totalPagado += pagado;
+  });
+  const totalSaldo = Math.max(0, totalDeuda - totalPagado);
+  const pctGeneral = Math.min(100, Math.round((totalPagado/totalDeuda)*100));
+
+  wrap.innerHTML = `
+    <!-- Resumen general -->
+    <div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.4rem;">
+      <p style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:0.6rem">Resumen de cuenta</p>
+      <div class="pago-barra-wrap" style="margin-bottom:0.6rem">
+        <div class="pago-barra-fill" style="width:${pctGeneral}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:0.4rem">
+        <span style="color:#2ecc71">Pagado: <strong>$${totalPagado.toFixed(2)}</strong></span>
+        <span style="color:#e67e22">Saldo: <strong>$${totalSaldo.toFixed(2)}</strong></span>
+        <span style="color:#666">Total: <strong>$${totalDeuda.toFixed(2)}</strong></span>
+      </div>
+      <p style="font-size:0.72rem;color:#555;text-align:center">${pctGeneral}% pagado</p>
+    </div>
+
+    <h3 style="font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:0.9rem">Detalle por pedido</h3>
+
+    ${pedidos.map(p => {
+      const pagado = (p.pagos||[]).reduce((s,pg)=>s+parseFloat(pg.monto),0);
+      const saldo = Math.max(0, parseFloat(p.precio) - pagado);
+      const pct = Math.min(100, Math.round((pagado/parseFloat(p.precio))*100));
+      let estClass = "estado-pendiente", estTxt = "Pendiente";
+      if (saldo <= 0) { estClass="estado-pagado"; estTxt="Pagado ✓"; }
+      else if (pagado > 0) { estClass="estado-parcial"; estTxt="Parcial"; }
+      return `
+        <div class="pedido-card">
+          <div class="pedido-card-header">
+            <div>
+              <div class="pedido-nombre">${p.nombre_perfume}</div>
+              <div class="pedido-tamano">${p.tamano} · ${p.tipo_pago}</div>
+            </div>
+            <span class="pedido-estado ${estClass}">${estTxt}</span>
+          </div>
+          <div class="pago-progreso">
+            <div class="pago-barra-wrap">
+              <div class="pago-barra-fill" style="width:${pct}%"></div>
+            </div>
+            <div class="pago-numeros">
+              <span class="pagado">✓ $${pagado.toFixed(2)}</span>
+              <span style="color:#666">${pct}%</span>
+              <span class="saldo">${saldo>0?"Debe $"+saldo.toFixed(2):"Saldado"}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join("")}
+  `;
+}
+
+// Inicializar carrito al cargar
+window.addEventListener("load", () => {
+  actualizarContadorCarrito();
+});
+
+
+</script>
+
+<!-- ========== MODAL LOGIN / REGISTRO ========== -->
+<div class="modal-overlay" id="modal-auth">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrarAuth()">×</button>
+
+    <div id="auth-login">
+      <h2>Bienvenido</h2>
+      <p class="modal-sub">Inicia sesión para ver tus pedidos y estado de cuenta.</p>
+
+      <!-- Google Login -->
+      <button class="btn-google" onclick="loginConGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+
+      <div class="modal-divider"><span>o con correo</span></div>
+
+      <div class="modal-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="login-email" placeholder="tucorreo@email.com">
+      </div>
+      <div class="modal-field">
+        <label>Nombre</label>
+        <input type="text" id="login-nombre" placeholder="Tu nombre completo">
+      </div>
+      <div class="modal-field">
+        <label>Teléfono (opcional)</label>
+        <input type="tel" id="login-telefono" placeholder="04xx-xxxxxxx">
+      </div>
+      <p class="modal-error" id="login-error"></p>
+      <button class="modal-btn" onclick="registrarOEntrar()">Entrar / Registrarme</button>
+      <p class="modal-toggle" style="font-size:0.78rem;margin-top:1rem;color:#555;">
+        Al ingresar aceptas que guardemos tu nombre y correo para gestionar tus pedidos.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PANEL ESTADO DE CUENTA ========== -->
+<div class="cuenta-overlay" id="cuenta-overlay" onclick="cerrarCuenta()"></div>
+<div class="cuenta-panel" id="cuenta-panel">
+  <div class="cuenta-header">
+    <h2>Mi Cuenta</h2>
+    <button class="cuenta-cerrar" onclick="cerrarCuenta()">×</button>
+  </div>
+  <p class="cuenta-saludo" id="cuenta-saludo">Hola, <strong id="cuenta-nombre-txt"></strong></p>
+  <div id="cuenta-pedidos-wrap">
+    <div class="cuenta-vacio">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+      <p>Cargando pedidos...</p>
+    </div>
+  </div>
+  <button class="btn-cerrar-sesion" onclick="cerrarSesion()">Cerrar sesión</button>
+</div>
+<!-- ══════ CARRITO ══════ -->
+<div class="carrito-overlay" id="carrito-overlay" onclick="cerrarCarrito()"></div>
+<div class="carrito-panel" id="carrito-panel">
+  <div class="carrito-header">
+    <h2>Mi Carrito</h2>
+    <button class="carrito-cerrar" onclick="cerrarCarrito()">×</button>
+  </div>
+  <div class="carrito-items" id="carrito-items">
+    <div class="carrito-vacio">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <p>Tu carrito está vacío</p>
+      <p style="font-size:0.8rem;margin-top:0.4rem">Agrega perfumes desde el catálogo</p>
+    </div>
+  </div>
+  <div class="carrito-footer" id="carrito-footer" style="display:none">
+    <div class="carrito-total-row">
+      <span class="carrito-total-label">Total</span>
+      <span class="carrito-total-val" id="carrito-total">$0.00</span>
+    </div>
+    <button class="btn-pedir-carrito" onclick="abrirModalPago()">
+      <svg viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" stroke="currentColor" fill="none" stroke-width="2"/></svg>
+      Continuar al pago
+    </button>
+    <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar carrito</button>
+  </div>
+</div>
+
+
+<!-- ===== MODAL DE PAGO ===== -->
+<div class="pago-overlay" id="pago-overlay" onclick="cerrarModalPago(event)">
+  <div class="pago-modal" onclick="event.stopPropagation()">
+    <div class="pago-header">
+      <h3>Finalizar Compra</h3>
+      <button class="pago-cerrar" onclick="document.getElementById('pago-overlay').classList.remove('open')">×</button>
+    </div>
+    <div class="pago-body">
+      <div class="pago-section">
+        <div class="pago-section-title">Realiza el Pago</div>
+        <div class="pago-dato">
+          <span class="pago-dato-label">RIF</span>
+          <span class="pago-dato-valor">
+            <span id="pago-rif">—</span>
+            <button class="pago-copy-btn" onclick="copiarDato('pago-rif')">Copiar</button>
+          </span>
+        </div>
+        <div class="pago-dato">
+          <span class="pago-dato-label">Celular</span>
+          <span class="pago-dato-valor">
+            <span id="pago-celular">—</span>
+            <button class="pago-copy-btn" onclick="copiarDato('pago-celular')">Copiar</button>
+          </span>
+        </div>
+        <div class="pago-dato">
+          <span class="pago-dato-label">Banco</span>
+          <span class="pago-dato-valor">
+            <span id="pago-banco">—</span>
+            <button class="pago-copy-btn" onclick="copiarDato('pago-banco')">Copiar</button>
+          </span>
+        </div>
+        <div class="pago-dato">
+          <span class="pago-dato-label">Monto</span>
+          <span class="pago-dato-valor">
+            <span id="pago-monto">$0.00</span>
+            <button class="pago-copy-btn" onclick="copiarDato('pago-monto')">Copiar</button>
+          </span>
+        </div>
+        <button class="pago-copiar-todo" onclick="copiarTodosDatos()">📋 Copiar todo</button>
+      </div>
+
+      <div class="pago-section">
+        <div class="pago-section-title">Confirmar Pedido</div>
+        <label style="font-size:0.82rem;color:#888">Teléfono del titular del Pago Móvil</label>
+        <input class="pago-input" id="pago-telefono-titular" type="tel" placeholder="04120000000">
+        <label style="font-size:0.82rem;color:#888;margin-top:0.8rem;display:block">Últimos 6 dígitos de la referencia</label>
+        <input class="pago-input" id="pago-referencia" type="text" maxlength="6" placeholder="123456">
+        <label style="font-size:0.82rem;color:#888;margin-top:0.8rem;display:block">📎 Subir comprobante (foto o captura)</label>
+        <label id="comprobante-label" style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;margin-top:0.4rem;padding:0.75rem 1rem;border:1px dashed rgba(212,175,55,0.4);border-radius:10px;background:rgba(212,175,55,0.04);transition:border-color 0.2s">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span id="comprobante-nombre" style="font-size:0.85rem;color:#aaa">Seleccionar imagen...</span>
+          <input type="file" id="pago-comprobante" accept="image/*" style="display:none" onchange="previsualizarComprobante(this)">
+        </label>
+        <div id="comprobante-preview-wrap" style="display:none;margin-top:0.6rem;border-radius:8px;overflow:hidden;border:1px solid rgba(212,175,55,0.25)">
+          <img id="comprobante-preview" src="" alt="Vista previa" style="width:100%;max-height:180px;object-fit:contain;background:#111;display:block">
+        </div>
+      </div>
+
+      <div class="pago-total-box">
+        <span class="label">Total</span>
+        <span class="valor" id="pago-total-modal">$0.00</span>
+      </div>
+
+      <button class="pago-confirmar-btn" onclick="confirmarPago()">Verificar Pago</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== TUS DATOS DE PAGO (edita aquí) =====
+const DATOS_PAGO = {
+  rif:     "Agrega tu RIF aquí",
+  celular: "Agrega tu celular aquí",
+  banco:   "Agrega tu banco aquí"
+};
+
+function abrirModalPago() {
+  if (carrito.length === 0) return;
+  const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  document.getElementById("pago-rif").textContent     = DATOS_PAGO.rif;
+  document.getElementById("pago-celular").textContent = DATOS_PAGO.celular;
+  document.getElementById("pago-banco").textContent   = DATOS_PAGO.banco;
+  document.getElementById("pago-monto").textContent   = "$" + total.toFixed(2);
+  document.getElementById("pago-total-modal").textContent = "$" + total.toFixed(2);
+  document.getElementById("pago-referencia").value = "";
+  document.getElementById("pago-telefono-titular").value = "";
+  document.getElementById("pago-overlay").classList.add("open");
+}
+
+function cerrarModalPago(e) {
+  if (e && e.target !== document.getElementById("pago-overlay")) return;
+  document.getElementById("pago-overlay").classList.remove("open");
+}
+
+function copiarDato(id) {
+  const txt = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(txt).then(() => mostrarToastPago("¡Copiado!"));
+}
+
+function copiarTodosDatos() {
+  const total = document.getElementById("pago-monto").textContent;
+  const txt = `RIF: ${DATOS_PAGO.rif}\nCelular: ${DATOS_PAGO.celular}\nBanco: ${DATOS_PAGO.banco}\nMonto: ${total}`;
+  navigator.clipboard.writeText(txt).then(() => mostrarToastPago("¡Datos copiados!"));
+}
+
+function mostrarToastPago(msg) {
+  const t = document.createElement("div");
+  t.textContent = msg;
+  t.style.cssText = "position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:0.6rem 1.2rem;border-radius:20px;font-size:0.85rem;font-weight:600;z-index:2000;pointer-events:none;";
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+function previsualizarComprobante(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById("comprobante-nombre").textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById("comprobante-preview").src = e.target.result;
+    document.getElementById("comprobante-preview-wrap").style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+async function confirmarPago() {
+  const telefono   = document.getElementById("pago-telefono-titular").value.trim();
+  const referencia = document.getElementById("pago-referencia").value.trim();
+  if (!telefono || referencia.length < 4) {
+    mostrarToastPago("Completa el teléfono y la referencia");
+    return;
+  }
+
+  const archivoInput = document.getElementById("pago-comprobante");
+  const archivo = archivoInput.files[0];
+
+  const btn = document.querySelector(".pago-confirmar-btn");
+  btn.textContent = "Enviando...";
+  btn.disabled = true;
+
+  const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  const supa = getSupa();
+  let urlComprobante = null;
+
+  // Subir imagen al bucket si hay archivo
+  if (supa && archivo) {
+    const ext       = archivo.name.split(".").pop();
+    const nombreArchivo = `comprobante_${Date.now()}_${referencia}.${ext}`;
+    const { data: upData, error: upError } = await supa.storage
+      .from("comprobantes")
+      .upload(nombreArchivo, archivo, { contentType: archivo.type, upsert: false });
+    if (!upError) {
+      const { data: urlData } = supa.storage.from("comprobantes").getPublicUrl(nombreArchivo);
+      urlComprobante = urlData?.publicUrl || null;
+    }
+  }
+
+  if (supa && clienteActual) {
+    for (const item of carrito) {
+      await supa.from("pedidos").insert({
+        cliente_id:        clienteActual.id,
+        nombre_perfume:    item.nombre,
+        tamano:            item.tamano,
+        precio:            item.precio * item.cantidad,
+        tipo_pago:         "pago_movil",
+        estado:            "pendiente",
+        referencia_pago:   referencia,
+        telefono_pago:     telefono,
+        comprobante_url:   urlComprobante
+      });
+    }
+  }
+
+  const lineas = carrito.map(i => `• ${i.nombre} (${i.tamano} x${i.cantidad}) — $${(i.precio*i.cantidad).toFixed(2)}`).join("\n");
+  const msg = `Hola Empire Parfum 👋\n\nRealicé un pago por *$${total.toFixed(2)}*\n\n${lineas}\n\n📱 Teléfono titular: ${telefono}\n🔢 Ref. (últ. 6): ${referencia}${urlComprobante ? "\n🖼 Comprobante: " + urlComprobante : ""}\n\n¡Por favor confirmar!`;
+  document.getElementById("pago-overlay").classList.remove("open");
+  vaciarCarrito();
+  btn.textContent = "Verificar Pago";
+  btn.disabled = false;
+  window.open("https://wa.me/" + WHATSAPP_NUMERO + "?text=" + encodeURIComponent(msg), "_blank");
+  mostrarToastPago("¡Pedido enviado!");
+}
+</script>
+
+</body>
+</html>

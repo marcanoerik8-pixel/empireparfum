@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Empire Parfum</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600&family=Jost:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:      #0a0a0a;
+  --surface: #111111;
+  --surface2: #181818;
+  --border:  rgba(212,175,55,0.18);
+  --accent:  #d4af37;
+  --accent-light: #f0d060;
+  --white:   #f0ece4;
+  --gray:    #666660;
+  --green:   #2ecc71;
+  --orange:  #e67e22;
+  --red:     #e74c3c;
+  --font-d:  'Cormorant Garamond', Georgia, serif;
+  --font-b:  'Jost', sans-serif;
+  --radius:  12px;
+  --tr:      0.3s cubic-bezier(0.22,1,0.36,1);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--white); font-family:var(--font-b); min-height:100vh; }
+
+/* ── LOGIN ── */
+.login-wrap {
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;
+}
+.login-box {
+  background:var(--surface); border:1px solid var(--border); border-radius:20px;
+  padding:3rem 2.5rem; width:100%; max-width:400px; text-align:center;
+}
+.login-logo { font-family:var(--font-d); font-size:1.6rem; letter-spacing:4px; color:var(--accent); text-transform:uppercase; font-weight:300; margin-bottom:0.3rem; }
+.login-sub { font-size:0.78rem; letter-spacing:2px; color:var(--gray); text-transform:uppercase; margin-bottom:2.5rem; }
+.login-field { text-align:left; margin-bottom:1.2rem; }
+.login-field label { display:block; font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase; color:rgba(212,175,55,0.7); margin-bottom:0.5rem; }
+.login-field input {
+  width:100%; padding:0.8rem 1.1rem; border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04);
+  color:var(--white); font-family:var(--font-b); font-size:0.92rem; outline:none;
+  transition:border-color var(--tr);
+}
+.login-field input:focus { border-color:var(--accent); }
+.login-btn {
+  width:100%; padding:0.9rem; border-radius:30px; border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent-light));
+  color:#0a0a0a; font-family:var(--font-b); font-size:0.82rem;
+  font-weight:600; letter-spacing:2px; text-transform:uppercase;
+  margin-top:0.5rem; transition:opacity var(--tr), transform var(--tr);
+}
+.login-btn:hover { opacity:0.9; transform:translateY(-2px); }
+.login-error { color:var(--red); font-size:0.82rem; margin-top:0.8rem; min-height:1.2rem; }
+
+/* ── LAYOUT ── */
+.admin-wrap { display:none; min-height:100vh; }
+.admin-wrap.visible { display:flex; flex-direction:column; }
+
+.top-bar {
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,10,10,0.95); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;
+}
+.top-bar-logo { font-family:var(--font-d); font-size:1.3rem; letter-spacing:3px; color:var(--accent); text-transform:uppercase; font-weight:300; }
+.top-bar-logo span { color:rgba(240,236,228,0.6); }
+.top-bar-right { display:flex; align-items:center; gap:1rem; }
+.top-badge { font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase; background:rgba(212,175,55,0.1); color:var(--accent); border:1px solid rgba(212,175,55,0.3); padding:0.3rem 0.8rem; border-radius:20px; }
+.btn-logout { background:none; border:1px solid rgba(255,255,255,0.1); color:var(--gray); padding:0.35rem 0.9rem; border-radius:20px; font-family:var(--font-b); font-size:0.75rem; cursor:pointer; transition:all var(--tr); }
+.btn-logout:hover { border-color:var(--red); color:var(--red); }
+
+.main { max-width:1200px; margin:0 auto; padding:2rem 1.5rem 4rem; width:100%; }
+
+/* ── STATS ── */
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:2.5rem; }
+.stat-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:1.4rem 1.6rem; position:relative; overflow:hidden;
+}
+.stat-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); }
+.stat-label { font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--gray); margin-bottom:0.5rem; }
+.stat-val { font-family:var(--font-d); font-size:2.2rem; font-weight:600; color:var(--white); line-height:1; }
+.stat-val.gold { color:var(--accent); }
+.stat-val.green { color:var(--green); }
+.stat-val.orange { color:var(--orange); }
+
+/* ── TABS ── */
+.tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:2rem; }
+.tab-btn {
+  background:none; border:none; color:var(--gray); font-family:var(--font-b);
+  font-size:0.8rem; letter-spacing:1.5px; text-transform:uppercase;
+  padding:0.9rem 1.4rem; cursor:pointer; position:relative; transition:color var(--tr);
+}
+.tab-btn::after { content:""; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:var(--accent); transform:scaleX(0); transition:transform var(--tr); }
+.tab-btn.active { color:var(--accent); }
+.tab-btn.active::after { transform:scaleX(1); }
+.tab-btn:hover { color:var(--white); }
+
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* ── SECTION HEADER ── */
+.section-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; flex-wrap:wrap; gap:0.8rem; }
+.section-hdr h2 { font-family:var(--font-d); font-size:1.5rem; font-weight:300; letter-spacing:1px; }
+.search-input {
+  padding:0.55rem 1rem; border-radius:20px; border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.04); color:var(--white); font-family:var(--font-b);
+  font-size:0.85rem; outline:none; width:220px; transition:border-color var(--tr);
+}
+.search-input:focus { border-color:var(--accent); }
+.search-input::placeholder { color:#444; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--border); }
+table { width:100%; border-collapse:collapse; }
+thead tr { background:rgba(212,175,55,0.06); border-bottom:1px solid var(--border); }
+th { padding:0.85rem 1rem; text-align:left; font-size:0.68rem; letter-spacing:2px; text-transform:uppercase; color:var(--accent); font-weight:500; white-space:nowrap; }
+td { padding:0.9rem 1rem; font-size:0.88rem; color:rgba(240,236,228,0.8); border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(255,255,255,0.02); }
+
+.badge {
+  display:inline-block; font-size:0.65rem; font-weight:600; letter-spacing:1px;
+  text-transform:uppercase; padding:0.22rem 0.65rem; border-radius:20px;
+}
+.badge-pendiente { background:rgba(230,126,34,0.15); color:var(--orange); border:1px solid rgba(230,126,34,0.3); }
+.badge-parcial   { background:rgba(212,175,55,0.12); color:var(--accent); border:1px solid rgba(212,175,55,0.3); }
+.badge-pagado    { background:rgba(46,204,113,0.12); color:var(--green); border:1px solid rgba(46,204,113,0.3); }
+
+/* ── PROGRESS BAR ── */
+.progress-wrap { min-width:120px; }
+.progress-bar { height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; margin-bottom:3px; }
+.progress-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--accent),var(--accent-light)); transition:width 0.6s ease; }
+.progress-txt { font-size:0.72rem; color:var(--gray); }
+
+/* ── ACTION BUTTONS ── */
+.btn-sm {
+  padding:0.32rem 0.75rem; border-radius:20px; font-family:var(--font-b);
+  font-size:0.72rem; font-weight:500; cursor:pointer; transition:all var(--tr); border:1px solid;
+}
+.btn-abono { background:rgba(46,204,113,0.1); color:var(--green); border-color:rgba(46,204,113,0.35); }
+.btn-abono:hover { background:var(--green); color:#0a0a0a; }
+.btn-estado { background:rgba(212,175,55,0.08); color:var(--accent); border-color:rgba(212,175,55,0.3); }
+.btn-estado:hover { background:var(--accent); color:#0a0a0a; }
+.btn-eliminar { background:rgba(231,76,60,0.08); color:#e74c3c; border-color:rgba(231,76,60,0.3); }
+.btn-eliminar:hover { background:#e74c3c; color:#fff; }
+.btn-ver { background:rgba(255,255,255,0.04); color:var(--gray); border-color:rgba(255,255,255,0.1); }
+.btn-ver:hover { color:var(--white); border-color:rgba(255,255,255,0.3); }
+.btn-actions { display:flex; gap:0.4rem; flex-wrap:wrap; }
+
+/* ── MODAL ABONO ── */
+.overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(6px); z-index:200; align-items:center; justify-content:center; padding:1rem;
+}
+.overlay.open { display:flex; }
+.modal {
+  background:var(--surface); border:1px solid var(--border); border-radius:18px;
+  padding:2.2rem; width:100%; max-width:440px;
+}
+.modal h3 { font-family:var(--font-d); font-size:1.5rem; font-weight:300; margin-bottom:0.4rem; }
+.modal-info { font-size:0.83rem; color:var(--gray); margin-bottom:1.5rem; }
+.field { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1rem; }
+.field label { font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase; color:rgba(212,175,55,0.7); }
+.field input, .field select, .field textarea {
+  padding:0.75rem 1rem; border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04);
+  color:var(--white); font-family:var(--font-b); font-size:0.9rem; outline:none;
+  transition:border-color var(--tr);
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color:var(--accent); }
+.field select option { background:#111; color:var(--white); }
+.field textarea { resize:vertical; min-height:70px; }
+.modal-btns { display:flex; gap:0.8rem; margin-top:1.2rem; }
+.btn-primary {
+  flex:1; padding:0.8rem; border-radius:30px; border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent-light));
+  color:#0a0a0a; font-family:var(--font-b); font-size:0.82rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
+  transition:opacity var(--tr);
+}
+.btn-primary:hover { opacity:0.88; }
+.btn-cancel {
+  flex:1; padding:0.8rem; border-radius:30px; background:none;
+  border:1px solid rgba(255,255,255,0.1); color:var(--gray); font-family:var(--font-b);
+  font-size:0.82rem; cursor:pointer; transition:all var(--tr);
+}
+.btn-cancel:hover { border-color:rgba(255,255,255,0.3); color:var(--white); }
+
+/* ── CLIENTES ── */
+.cliente-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:1.2rem 1.4rem; margin-bottom:0.8rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+}
+.cliente-nombre { font-family:var(--font-d); font-size:1.2rem; font-weight:400; }
+.cliente-info { font-size:0.8rem; color:var(--gray); margin-top:0.2rem; }
+.cliente-stats { display:flex; gap:1.5rem; font-size:0.82rem; }
+.cliente-stat { text-align:center; }
+.cliente-stat .val { font-family:var(--font-d); font-size:1.3rem; color:var(--accent); display:block; }
+.cliente-stat .lbl { font-size:0.68rem; letter-spacing:1px; text-transform:uppercase; color:var(--gray); }
+
+/* ── NUEVO PEDIDO ── */
+.nuevo-pedido-form {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:1.8rem; max-width:600px;
+}
+.nuevo-pedido-form h3 { font-family:var(--font-d); font-size:1.4rem; font-weight:300; margin-bottom:1.5rem; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+/* ── EMPTY / LOADING ── */
+.empty-state { text-align:center; padding:4rem 2rem; color:var(--gray); }
+.empty-state svg { width:48px; height:48px; stroke:rgba(212,175,55,0.2); margin:0 auto 1rem; }
+.empty-state p { font-size:0.9rem; }
+.loading { text-align:center; padding:3rem; color:var(--gray); font-size:0.85rem; letter-spacing:1px; }
+
+/* ── COMPROBANTE ── */
+.btn-comprobante { background:rgba(212,175,55,0.08); color:var(--accent); border-color:rgba(212,175,55,0.3); }
+.btn-comprobante:hover { background:var(--accent); color:#0a0a0a; }
+.modal-comprobante { max-width:520px; }
+.comprobante-img-wrap { margin:1rem 0; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:#0a0a0a; text-align:center; }
+.comprobante-img-wrap img { max-width:100%; max-height:400px; object-fit:contain; display:block; margin:0 auto; }
+.comprobante-info { font-size:0.82rem; color:var(--gray); margin-bottom:1rem; }
+.comprobante-ref { display:inline-block; font-size:0.75rem; letter-spacing:1px; background:rgba(212,175,55,0.1); color:var(--accent); border:1px solid rgba(212,175,55,0.25); padding:0.25rem 0.7rem; border-radius:20px; margin-bottom:0.8rem; }
+.no-comprobante { padding:2rem; text-align:center; color:var(--gray); font-size:0.88rem; }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--surface); border:1px solid var(--border); border-radius:30px;
+  padding:0.8rem 1.6rem; font-size:0.85rem; z-index:500;
+  transition:transform 0.4s cubic-bezier(0.22,1,0.36,1); white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.success { border-color:rgba(46,204,113,0.4); color:var(--green); }
+.toast.error { border-color:rgba(231,76,60,0.4); color:var(--red); }
+
+.estado-cliente-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 1.2rem; overflow: hidden;
+}
+.estado-cliente-header {
+  padding: 1.2rem 1.5rem; display: flex; align-items: center;
+  justify-content: space-between; cursor: pointer; gap: 1rem;
+  transition: background var(--tr);
+}
+.estado-cliente-header:hover { background: rgba(212,175,55,0.04); }
+.estado-cliente-nombre { font-family: var(--font-d); font-size: 1.25rem; font-weight: 400; }
+.estado-cliente-info { font-size: 0.78rem; color: var(--gray); margin-top: 0.15rem; }
+.estado-resumen { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+.estado-num { text-align: center; }
+.estado-num .val { font-family: var(--font-d); font-size: 1.3rem; display: block; }
+.estado-num .lbl { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
+.estado-toggle { font-size: 1.2rem; color: var(--gray); transition: transform var(--tr); }
+.estado-toggle.open { transform: rotate(180deg); }
+.estado-detalle { display: none; border-top: 1px solid var(--border); padding: 1.2rem 1.5rem; }
+.estado-detalle.open { display: block; }
+.estado-barra-wrap { height: 5px; background: rgba(255,255,255,0.06); border-radius: 5px; overflow: hidden; margin: 0.6rem 0; }
+.estado-barra-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 5px; }
+.estado-pedido-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem;
+}
+.estado-pedido-row:last-child { border-bottom: none; }
+.estado-pedido-nombre { font-weight: 500; }
+.estado-pedido-sub { font-size: 0.75rem; color: var(--gray); }
+.estado-pedido-nums { display: flex; gap: 1rem; font-size: 0.82rem; }
+
+@media (max-width:600px) {
+@media (max-width:600px) {
+  .stats { grid-template-columns:1fr 1fr; }
+  .form-row { grid-template-columns:1fr; }
+  .tabs { overflow-x:auto; }
+  .tab-btn { white-space:nowrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════ LOGIN ════ -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">Empire <span>Parfum</span></div>
+    <div class="login-sub">Panel de Administrador</div>
+    <div class="login-field">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')verificarAcceso()">
+    </div>
+    <div class="login-error" id="login-err"></div>
+    <button class="login-btn" onclick="verificarAcceso()">Ingresar al Panel</button>
+  </div>
+</div>
+
+<!-- ════ ADMIN PANEL ════ -->
+<div class="admin-wrap" id="admin-wrap">
+
+  <div class="top-bar">
+    <div class="top-bar-logo">Empire <span>Parfum</span></div>
+    <div class="top-bar-right">
+      <span class="top-badge">Administrador</span>
+      <button class="btn-logout" onclick="salir()">Salir</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- STATS -->
+    <div class="stats" id="stats-wrap">
+      <div class="stat-card"><div class="stat-label">Total Pedidos</div><div class="stat-val gold" id="s-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-val orange" id="s-pend">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pagados</div><div class="stat-val green" id="s-pag">—</div></div>
+      <div class="stat-card"><div class="stat-label">Por Cobrar</div><div class="stat-val gold" id="s-saldo">—</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="cambiarTab('pedidos',this)">Pedidos</button>
+      <button class="tab-btn" onclick="cambiarTab('clientes',this)">Clientes</button>
+      <button class="tab-btn" onclick="cambiarTab('productos',this)">Catálogo</button>
+      <button class="tab-btn" onclick="cambiarTab('estados',this)">Estados de Cuenta</button>
+      <button class="tab-btn" onclick="cambiarTab('nuevo',this)">+ Nuevo Pedido</button>
+    </div>
+
+    <!-- TAB: PEDIDOS -->
+    <div class="tab-panel active" id="tab-pedidos">
+      <div class="section-hdr">
+        <h2>Todos los Pedidos</h2>
+        <input class="search-input" placeholder="Buscar cliente o perfume..." oninput="filtrarPedidos(this.value)">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Perfume</th>
+              <th>Tamaño</th>
+              <th>Total</th>
+              <th>Progreso</th>
+              <th>Estado</th>
+              <th>Comprobante</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-pedidos">
+            <tr><td colspan="8" class="loading">Cargando pedidos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: CLIENTES -->
+    <div class="tab-panel" id="tab-clientes">
+      <div class="section-hdr"><h2>Clientes Registrados</h2></div>
+      <div id="lista-clientes"><div class="loading">Cargando clientes...</div></div>
+    </div>
+
+    <!-- TAB: PRODUCTOS -->
+    <div class="tab-panel" id="tab-productos">
+      <div class="section-hdr">
+        <h2>Catálogo de Productos</h2>
+        <button class="btn-primary" style="width:auto;padding:0.55rem 1.4rem;font-size:0.78rem" onclick="abrirNuevoProducto()">+ Agregar perfume</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>30ml</th>
+              <th>60ml</th>
+              <th>Estado</th>
+              <th>Nuevo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-productos">
+            <tr><td colspan="8" class="loading">Cargando productos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: ESTADOS DE CUENTA -->
+    <div class="tab-panel" id="tab-estados">
+      <div class="section-hdr">
+        <h2>Estados de Cuenta por Cliente</h2>
+        <input class="search-input" placeholder="Buscar cliente..." oninput="filtrarEstados(this.value)">
+      </div>
+      <div id="lista-estados"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- TAB: NUEVO PEDIDO -->
+    <div class="tab-panel" id="tab-nuevo">
+      <div class="nuevo-pedido-form">
+        <h3>Registrar Nuevo Pedido</h3>
+        <div class="field">
+          <label>Cliente</label>
+          <select id="np-cliente"><option value="">Selecciona un cliente...</option></select>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Perfume</label>
+            <input type="text" id="np-perfume" placeholder="Nombre del perfume">
+          </div>
+          <div class="field">
+            <label>Tamaño</label>
+            <select id="np-tamano">
+              <option value="30ml">30ml — $7.00</option>
+              <option value="60ml">60ml — $14.00</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Precio ($)</label>
+            <input type="number" id="np-precio" value="7.00" step="0.50" min="0">
+          </div>
+          <div class="field">
+            <label>Tipo de Pago</label>
+            <select id="np-tipopago">
+              <option value="cuotas">A cuotas</option>
+              <option value="completo">Pago completo</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-btns">
+          <button class="btn-primary" onclick="crearPedido()">Registrar Pedido</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /admin-wrap -->
+
+<!-- ════ MODAL ABONO ════ -->
+<div class="overlay" id="overlay-abono">
+  <div class="modal">
+    <h3>Registrar Abono</h3>
+    <p class="modal-info" id="abono-info">Pedido: —</p>
+    <div class="field">
+      <label>Monto del Abono ($)</label>
+      <input type="number" id="abono-monto" placeholder="0.00" step="0.50" min="0">
+    </div>
+    <div class="field">
+      <label>Nota (opcional)</label>
+      <textarea id="abono-nota" placeholder="Ej: Pagó por transferencia..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cerrarAbono()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarAbono()">Guardar Abono</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL CAMBIAR ESTADO ════ -->
+<div class="overlay" id="overlay-estado">
+  <div class="modal">
+    <h3>Cambiar Estado</h3>
+    <p class="modal-info" id="estado-info">—</p>
+    <div class="field">
+      <label>Nuevo Estado</label>
+      <select id="estado-nuevo">
+        <option value="pendiente">Pendiente</option>
+        <option value="parcial">Pago parcial</option>
+        <option value="pagado">Pagado</option>
+        <option value="cancelado">Cancelado</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cerrarEstado()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarEstado()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL PRODUCTO ════ -->
+<div class="overlay" id="overlay-producto">
+  <div class="modal" style="max-width:520px;max-height:90vh;overflow-y:auto">
+    <h3 id="prod-modal-title">Agregar Perfume</h3>
+    <p class="modal-info">Los cambios se verán en la página al instante</p>
+    <input type="hidden" id="prod-id">
+    <div class="form-row">
+      <div class="field">
+        <label>Nombre del perfume</label>
+        <input type="text" id="prod-nombre" placeholder="Ej: Sauvage Dior">
+      </div>
+      <div class="field">
+        <label>Categoría</label>
+        <select id="prod-categoria">
+          <option value="caballeros">Caballeros</option>
+          <option value="damas">Damas</option>
+          <option value="mayoristas">Mayoristas</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>URL de imagen</label>
+      <input type="text" id="prod-imagen" placeholder="Ej: foto1.jpg o https://...">
+    </div>
+    <div class="field">
+      <label>Descripción corta</label>
+      <input type="text" id="prod-desc" placeholder="Ej: Fresco, sensual y magnético">
+    </div>
+    <div class="field">
+      <label>Descripción larga</label>
+      <textarea id="prod-desc-larga" rows="3" placeholder="Descripción completa del perfume para la página de detalle..."></textarea>
+    </div>
+    <p style="font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(212,175,55,0.7);margin-bottom:0.6rem;margin-top:0.4rem">Pirámide Olfativa</p>
+    <div class="field">
+      <label>🟡 Notas de Salida</label>
+      <input type="text" id="prod-notas-salida" placeholder="Ej: Bergamota, Limón, Pimienta">
+    </div>
+    <div class="field">
+      <label>🌸 Notas de Corazón</label>
+      <input type="text" id="prod-notas-corazon" placeholder="Ej: Rosa, Jazmín, Geranio">
+    </div>
+    <div class="field">
+      <label>🌲 Notas de Fondo</label>
+      <input type="text" id="prod-notas-fondo" placeholder="Ej: Ambroxan, Cedro, Almizcle">
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Precio 30ml ($)</label>
+        <input type="number" id="prod-precio30" value="7.00" step="0.50" min="0">
+      </div>
+      <div class="field">
+        <label>Precio 60ml ($)</label>
+        <input type="number" id="prod-precio60" value="14.00" step="0.50" min="0">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field" style="flex-direction:row;align-items:center;gap:0.8rem;padding-top:1.2rem">
+        <input type="checkbox" id="prod-disponible" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+        <label for="prod-disponible" style="text-transform:none;letter-spacing:0;font-size:0.88rem;color:var(--white);cursor:pointer">Disponible</label>
+      </div>
+      <div class="field" style="flex-direction:row;align-items:center;gap:0.8rem;padding-top:1.2rem">
+        <input type="checkbox" id="prod-nuevo" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+        <label for="prod-nuevo" style="text-transform:none;letter-spacing:0;font-size:0.88rem;color:var(--white);cursor:pointer">Marcar como "Nuevo"</label>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cerrarProducto()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarProducto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL COMPROBANTE ════ -->
+<div class="overlay" id="overlay-comprobante">
+  <div class="modal modal-comprobante">
+    <h3>🖼 Comprobante de Pago</h3>
+    <p class="comprobante-info" id="comprobante-cliente-info">—</p>
+    <span class="comprobante-ref" id="comprobante-ref-badge"></span>
+    <div class="comprobante-img-wrap" id="comprobante-img-wrap">
+      <p class="no-comprobante">No se subió comprobante para este pedido.</p>
+    </div>
+    <div class="modal-btns" style="margin-top:1rem">
+      <button class="btn-cancel" onclick="cerrarComprobante()">Cerrar</button>
+      <button class="btn-primary" id="btn-aprobar-desde-comprobante" onclick="">✓ Marcar como Pagado</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TOAST ════ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const PASS_ADMIN = "empire2024";   // 🔑 Cambia esta contraseña
+const SUPA_URL   = "https://diwllqituydneqbfyyjj.supabase.co";
+const SUPA_KEY   = "sb_publishable_xtOJUOF8rNUXnUp5ban3MQ_9ViyeDQs";
+
+let supa, todosPedidos = [], pedidoActual = null;
+
+// ── LOGIN ────────────────────────────────────────────────────────────────────
+function verificarAcceso() {
+  const pass = document.getElementById("login-pass").value;
+  const err  = document.getElementById("login-err");
+  if (pass === PASS_ADMIN) {
+    document.getElementById("login-wrap").style.display = "none";
+    document.getElementById("admin-wrap").classList.add("visible");
+    iniciarAdmin();
+  } else {
+    err.textContent = "Contraseña incorrecta. Intenta de nuevo.";
+    document.getElementById("login-pass").value = "";
+  }
+}
+
+function salir() {
+  location.reload();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+async function iniciarAdmin() {
+  supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+  await Promise.all([cargarPedidos(), cargarClientes(), cargarProductos(), cargarEstados()]);
+  cargarClientesSelect();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function mostrarToast(msg, tipo = "success") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = `toast ${tipo} show`;
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+function cambiarTab(id, btn) {
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + id).classList.add("active");
+  btn.classList.add("active");
+}
+
+// ── PEDIDOS ──────────────────────────────────────────────────────────────────
+async function cargarPedidos() {
+  const { data, error } = await supa
+    .from("pedidos")
+    .select("*, clientes(nombre, email, telefono), pagos(*)")
+    .order("creado_en", { ascending: false });
+
+  if (error) { mostrarToast("Error al cargar pedidos", "error"); return; }
+  todosPedidos = (data || []).filter(p => p.estado !== "cancelado");
+  renderPedidos(todosPedidos);
+  actualizarStats(todosPedidos);
+}
+
+function calcSaldo(p) {
+  const pagado = (p.pagos || []).reduce((s, pg) => s + parseFloat(pg.monto), 0);
+  return { pagado, saldo: Math.max(0, parseFloat(p.precio) - pagado) };
+}
+
+function getBadge(p) {
+  const { saldo, pagado } = calcSaldo(p);
+  if (saldo <= 0)      return '<span class="badge badge-pagado">Pagado</span>';
+  if (pagado > 0)      return '<span class="badge badge-parcial">Parcial</span>';
+  return '<span class="badge badge-pendiente">Pendiente</span>';
+}
+
+function renderPedidos(pedidos) {
+  const tbody = document.getElementById("tabla-pedidos");
+  if (!pedidos.length) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+      <p>No hay pedidos registrados aún.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = pedidos.map(p => {
+    const { pagado, saldo } = calcSaldo(p);
+    const pct = Math.min(100, Math.round((pagado / parseFloat(p.precio)) * 100));
+    const fecha = new Date(p.creado_en).toLocaleDateString("es", { day:"2-digit", month:"short", year:"2-digit" });
+    const cliente = p.clientes ? p.clientes.nombre : "—";
+    const tieneComprobante = !!p.comprobante_url;
+    const refSegura = (p.referencia_pago || "").replace(/'/g, "\\'");
+    const nombreSeguro = (p.nombre_perfume || "").replace(/'/g, "\\'");
+    const clienteSeguro = (p.clientes?.nombre || "—").replace(/'/g, "\\'");
+    return `<tr>
+      <td><strong>${cliente}</strong><br><span style="font-size:0.75rem;color:var(--gray)">${p.clientes?.telefono || ""}</span></td>
+      <td>${p.nombre_perfume}</td>
+      <td>${p.tamano}</td>
+      <td style="color:var(--accent);font-weight:600">$${parseFloat(p.precio).toFixed(2)}</td>
+      <td>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="progress-txt">$${pagado.toFixed(2)} / $${parseFloat(p.precio).toFixed(2)} (${pct}%)</div>
+        </div>
+      </td>
+      <td>${getBadge(p)}</td>
+      <td style="text-align:center">
+        ${tieneComprobante
+          ? `<button class="btn-sm btn-comprobante" onclick="verComprobante('${p.id}','${clienteSeguro}','${refSegura}','${p.comprobante_url}','${nombreSeguro}',${parseFloat(p.precio)},${pagado})">🖼 Ver</button>`
+          : `<span style="font-size:0.75rem;color:var(--gray)">—</span>`
+        }
+      </td>
+      <td style="color:var(--gray);font-size:0.8rem">${fecha}</td>
+      <td>
+        <div class="btn-actions">
+          <button class="btn-sm btn-abono" onclick="abrirAbono('${p.id}','${nombreSeguro}',${parseFloat(p.precio)},${pagado})">+ Abono</button>
+          <button class="btn-sm btn-estado" onclick="abrirEstado('${p.id}','${nombreSeguro}','${p.estado}')">Estado</button>
+          <button class="btn-sm btn-eliminar" onclick="eliminarPedido('${p.id}','${nombreSeguro}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function filtrarPedidos(q) {
+  const txt = q.toLowerCase();
+  const filtrado = todosPedidos.filter(p =>
+    p.nombre_perfume.toLowerCase().includes(txt) ||
+    (p.clientes?.nombre || "").toLowerCase().includes(txt)
+  );
+  renderPedidos(filtrado);
+}
+
+function actualizarStats(pedidos) {
+  const total = pedidos.length;
+  let pendientes = 0, pagados = 0, porCobrar = 0;
+  pedidos.forEach(p => {
+    const { saldo, pagado } = calcSaldo(p);
+    if (saldo <= 0) pagados++;
+    else if (pagado === 0) pendientes++;
+    porCobrar += saldo;
+  });
+  document.getElementById("s-total").textContent = total;
+  document.getElementById("s-pend").textContent  = pendientes;
+  document.getElementById("s-pag").textContent   = pagados;
+  document.getElementById("s-saldo").textContent = "$" + porCobrar.toFixed(2);
+}
+
+// ── ABONO ─────────────────────────────────────────────────────────────────────
+let pedidoAbonoId = null;
+
+function abrirAbono(id, nombre, precio, pagado) {
+  pedidoAbonoId = id;
+  const saldo = (precio - pagado).toFixed(2);
+  document.getElementById("abono-info").textContent = `${nombre} — Saldo pendiente: $${saldo}`;
+  document.getElementById("abono-monto").value = saldo;
+  document.getElementById("abono-nota").value  = "";
+  document.getElementById("overlay-abono").classList.add("open");
+}
+
+function cerrarAbono() {
+  document.getElementById("overlay-abono").classList.remove("open");
+  pedidoAbonoId = null;
+}
+
+async function guardarAbono() {
+  const monto = parseFloat(document.getElementById("abono-monto").value);
+  const nota  = document.getElementById("abono-nota").value.trim();
+  if (!monto || monto <= 0) { mostrarToast("Ingresa un monto válido", "error"); return; }
+
+  const { error } = await supa.from("pagos").insert({
+    pedido_id: pedidoAbonoId, monto, nota: nota || null
+  });
+
+  if (error) { mostrarToast("Error al guardar abono", "error"); return; }
+
+  // Auto-actualizar estado según saldo
+  const pedido = todosPedidos.find(p => p.id === pedidoAbonoId);
+  if (pedido) {
+    const totalPagado = (pedido.pagos || []).reduce((s, pg) => s + parseFloat(pg.monto), 0) + monto;
+    const nuevoEstado = totalPagado >= parseFloat(pedido.precio) ? "pagado" : "parcial";
+    await supa.from("pedidos").update({ estado: nuevoEstado }).eq("id", pedidoAbonoId);
+  }
+
+  cerrarAbono();
+  mostrarToast("✓ Abono registrado correctamente");
+  await Promise.all([cargarPedidos(), cargarEstados()]);
+}
+
+// ── ESTADO ────────────────────────────────────────────────────────────────────
+let pedidoEstadoId = null;
+
+function abrirEstado(id, nombre, estadoActual) {
+  pedidoEstadoId = id;
+  document.getElementById("estado-info").textContent = nombre;
+  document.getElementById("estado-nuevo").value = estadoActual || "pendiente";
+  document.getElementById("overlay-estado").classList.add("open");
+}
+
+function cerrarEstado() {
+  document.getElementById("overlay-estado").classList.remove("open");
+  pedidoEstadoId = null;
+}
+
+async function guardarEstado() {
+  const estado = document.getElementById("estado-nuevo").value;
+  const { error } = await supa.from("pedidos").update({ estado }).eq("id", pedidoEstadoId);
+  if (error) { mostrarToast("Error al actualizar estado", "error"); return; }
+  cerrarEstado();
+  mostrarToast("✓ Estado actualizado");
+  await cargarPedidos();
+}
+
+async function eliminarPedido(id, nombre) {
+  if (!confirm(`¿Eliminar el pedido "${nombre}"?\nEsta acción no se puede deshacer.`)) return;
+
+  // Quitar visualmente al instante
+  todosPedidos = todosPedidos.filter(p => p.id !== id);
+  renderPedidos(todosPedidos);
+  actualizarStats(todosPedidos);
+
+  // Borrar pagos primero (clave foranea)
+  await supa.from("pagos").delete().eq("pedido_id", id);
+
+  // Borrar el pedido
+  const { error } = await supa.from("pedidos").delete().eq("id", id);
+
+  if (error) {
+    mostrarToast("Error al eliminar en base de datos", "error");
+    await cargarPedidos();
+    return;
+  }
+
+  mostrarToast("✓ Pedido eliminado");
+  await Promise.all([cargarPedidos(), cargarEstados()]);
+}
+
+// ── CLIENTES ──────────────────────────────────────────────────────────────────
+let todosClientes = [];
+
+async function cargarClientes() {
+  const { data, error } = await supa.from("clientes").select("*, pedidos(*, pagos(*))").order("creado_en", { ascending: false });
+  if (error) return;
+  todosClientes = data || [];
+  renderClientes(todosClientes);
+}
+
+function renderClientes(clientes) {
+  const wrap = document.getElementById("lista-clientes");
+  if (!clientes.length) {
+    wrap.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>No hay clientes registrados aún.</p></div>`;
+    return;
+  }
+  wrap.innerHTML = clientes.map(c => {
+    const pedidos = c.pedidos || [];
+    let totalDeuda = 0, totalPagado = 0;
+    pedidos.forEach(p => {
+      const pagado = (p.pagos || []).reduce((s, pg) => s + parseFloat(pg.monto), 0);
+      totalDeuda   += parseFloat(p.precio);
+      totalPagado  += pagado;
+    });
+    const saldo = Math.max(0, totalDeuda - totalPagado);
+    return `<div class="cliente-card">
+      <div>
+        <div class="cliente-nombre">${c.nombre}</div>
+        <div class="cliente-info">${c.email}${c.telefono ? " · " + c.telefono : ""}</div>
+      </div>
+      <div class="cliente-stats">
+        <div class="cliente-stat"><span class="val">${pedidos.length}</span><span class="lbl">Pedidos</span></div>
+        <div class="cliente-stat"><span class="val" style="color:var(--green)">$${totalPagado.toFixed(2)}</span><span class="lbl">Pagado</span></div>
+        <div class="cliente-stat"><span class="val" style="color:${saldo>0?"var(--orange)":"var(--green)"}">$${saldo.toFixed(2)}</span><span class="lbl">Saldo</span></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function cargarClientesSelect() {
+  const sel = document.getElementById("np-cliente");
+  todosClientes.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.id;
+    opt.textContent = c.nombre + (c.telefono ? " · " + c.telefono : "");
+    sel.appendChild(opt);
+  });
+}
+
+// ── NUEVO PEDIDO ──────────────────────────────────────────────────────────────
+document.getElementById("np-tamano")?.addEventListener("change", function() {
+  const precios = { "30ml": 7.00, "60ml": 14.00 };
+  document.getElementById("np-precio").value = precios[this.value] || 7.00;
+});
+
+async function crearPedido() {
+  const cliente  = document.getElementById("np-cliente").value;
+  const perfume  = document.getElementById("np-perfume").value.trim();
+  const tamano   = document.getElementById("np-tamano").value;
+  const precio   = parseFloat(document.getElementById("np-precio").value);
+  const tipopago = document.getElementById("np-tipopago").value;
+
+  if (!cliente || !perfume || !precio) {
+    mostrarToast("Completa todos los campos", "error"); return;
+  }
+
+  const { error } = await supa.from("pedidos").insert({
+    cliente_id: cliente, nombre_perfume: perfume,
+    tamano, precio, tipo_pago: tipopago, estado: "pendiente"
+  });
+
+  if (error) { mostrarToast("Error al crear pedido", "error"); return; }
+  mostrarToast("✓ Pedido registrado");
+  document.getElementById("np-perfume").value = "";
+  document.getElementById("np-precio").value = "7.00";
+  cambiarTab("pedidos", document.querySelectorAll(".tab-btn")[0]);
+  await cargarPedidos();
+}
+
+// ── ENTER en login ────────────────────────────────────────────────────────────
+// ── PRODUCTOS ─────────────────────────────────────────────────────────────────
+let todosProductos = [];
+
+async function cargarProductos() {
+  const { data, error } = await supa.from("productos").select("*").order("categoria").order("nombre");
+  if (error) { mostrarToast("Error al cargar productos", "error"); return; }
+  todosProductos = data || [];
+  renderProductos(todosProductos);
+}
+
+function renderProductos(productos) {
+  const tbody = document.getElementById("tabla-productos");
+  if (!productos.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><p>No hay productos aún.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = productos.map(p => {
+    const imgHtml = p.imagen
+      ? `<img src="${p.imagen}" alt="${p.nombre}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border)" onerror="this.style.display='none'">`
+      : `<div style="width:44px;height:44px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;opacity:0.3"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.4" width="22" height="22"><path d="M10 3h4M11 3v3.5c0 .6-.3 1.1-.8 1.4C8.8 8.7 8 10 8 11.5V19a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7.5c0-1.5-.8-2.8-2.2-3.6-.5-.3-.8-.8-.8-1.4V3"/><path d="M8 13h8"/></svg></div>`;
+    const piramideResumen = [p.notas_salida, p.notas_corazon, p.notas_fondo].filter(Boolean).join(" · ") || p.notas || "—";
+    return `<tr>
+    <td>${imgHtml}</td>
+    <td><strong>${p.nombre}</strong><br><span style="font-size:0.72rem;color:var(--gray)">${piramideResumen.substring(0,60)}${piramideResumen.length>60?"…":""}</span></td>
+    <td style="text-transform:capitalize">${p.categoria}</td>
+    <td style="color:var(--accent)">$${parseFloat(p.precio_30ml).toFixed(2)}</td>
+    <td style="color:var(--accent)">$${parseFloat(p.precio_60ml).toFixed(2)}</td>
+    <td>${p.disponible
+      ? '<span class="badge badge-pagado">Disponible</span>'
+      : '<span class="badge badge-pendiente">No disponible</span>'}</td>
+    <td>${p.nuevo ? '<span class="badge badge-parcial">Nuevo</span>' : '—'}</td>
+    <td>
+      <div class="btn-actions">
+        <button class="btn-sm btn-estado" onclick="editarProducto('${p.id}')">Editar</button>
+        <button class="btn-sm" style="background:rgba(231,76,60,0.1);color:#e74c3c;border:1px solid rgba(231,76,60,0.3)" onclick="eliminarProducto('${p.id}','${p.nombre.replace(/'/g,"\'")}')">Eliminar</button>
+      </div>
+    </td>
+  </tr>`;
+  }).join("");
+}
+
+function abrirNuevoProducto() {
+  document.getElementById("prod-modal-title").textContent = "Agregar Perfume";
+  document.getElementById("prod-id").value = "";
+  document.getElementById("prod-nombre").value = "";
+  document.getElementById("prod-imagen").value = "";
+  document.getElementById("prod-desc").value = "";
+  document.getElementById("prod-desc-larga").value = "";
+  document.getElementById("prod-notas-salida").value = "";
+  document.getElementById("prod-notas-corazon").value = "";
+  document.getElementById("prod-notas-fondo").value = "";
+  document.getElementById("prod-precio30").value = "7.00";
+  document.getElementById("prod-precio60").value = "14.00";
+  document.getElementById("prod-categoria").value = "caballeros";
+  document.getElementById("prod-disponible").checked = true;
+  document.getElementById("prod-nuevo").checked = false;
+  document.getElementById("overlay-producto").classList.add("open");
+}
+
+function editarProducto(id) {
+  const p = todosProductos.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById("prod-modal-title").textContent = "Editar Perfume";
+  document.getElementById("prod-id").value = p.id;
+  document.getElementById("prod-nombre").value = p.nombre;
+  document.getElementById("prod-imagen").value = p.imagen || "";
+  document.getElementById("prod-desc").value = p.descripcion_corta || "";
+  document.getElementById("prod-desc-larga").value = p.descripcion_larga || "";
+  document.getElementById("prod-notas-salida").value = p.notas_salida || "";
+  document.getElementById("prod-notas-corazon").value = p.notas_corazon || "";
+  document.getElementById("prod-notas-fondo").value = p.notas_fondo || "";
+  document.getElementById("prod-precio30").value = p.precio_30ml;
+  document.getElementById("prod-precio60").value = p.precio_60ml;
+  document.getElementById("prod-categoria").value = p.categoria;
+  document.getElementById("prod-disponible").checked = p.disponible;
+  document.getElementById("prod-nuevo").checked = p.nuevo;
+  document.getElementById("overlay-producto").classList.add("open");
+}
+
+function cerrarProducto() {
+  document.getElementById("overlay-producto").classList.remove("open");
+}
+
+async function guardarProducto() {
+  const id               = document.getElementById("prod-id").value;
+  const nombre           = document.getElementById("prod-nombre").value.trim();
+  const imagen           = document.getElementById("prod-imagen").value.trim();
+  const descripcion      = document.getElementById("prod-desc").value.trim();
+  const descripcion_larga = document.getElementById("prod-desc-larga").value.trim();
+  const notas_salida     = document.getElementById("prod-notas-salida").value.trim();
+  const notas_corazon    = document.getElementById("prod-notas-corazon").value.trim();
+  const notas_fondo      = document.getElementById("prod-notas-fondo").value.trim();
+  const precio_30ml      = parseFloat(document.getElementById("prod-precio30").value);
+  const precio_60ml      = parseFloat(document.getElementById("prod-precio60").value);
+  const categoria        = document.getElementById("prod-categoria").value;
+  const disponible       = document.getElementById("prod-disponible").checked;
+  const nuevo            = document.getElementById("prod-nuevo").checked;
+
+  if (!nombre) { mostrarToast("El nombre es obligatorio", "error"); return; }
+
+  const datos = {
+    nombre, imagen, descripcion_corta: descripcion, descripcion_larga,
+    notas_salida, notas_corazon, notas_fondo,
+    precio_30ml, precio_60ml, categoria, disponible, nuevo
+  };
+
+  let error;
+  if (id) {
+    ({ error } = await supa.from("productos").update(datos).eq("id", id));
+  } else {
+    ({ error } = await supa.from("productos").insert(datos));
+  }
+
+  if (error) { mostrarToast("Error al guardar", "error"); return; }
+  cerrarProducto();
+  mostrarToast(id ? "✓ Perfume actualizado" : "✓ Perfume agregado");
+  await cargarProductos();
+}
+
+async function eliminarProducto(id, nombre) {
+  if (!confirm(`¿Eliminar "${nombre}" del catálogo?`)) return;
+  const { error } = await supa.from("productos").delete().eq("id", id);
+  if (error) { mostrarToast("Error al eliminar", "error"); return; }
+  mostrarToast("✓ Perfume eliminado");
+  await cargarProductos();
+}
+
+// ── ESTADOS DE CUENTA ─────────────────────────────────────────────────────────
+let todosEstados = [];
+
+async function cargarEstados() {
+  const { data, error } = await supa
+    .from("clientes")
+    .select("*, pedidos(*, pagos(*))")
+    .order("nombre");
+  if (error) return;
+  todosEstados = (data || []).filter(c => (c.pedidos||[]).length > 0);
+  renderEstados(todosEstados);
+}
+
+function filtrarEstados(q) {
+  const txt = q.toLowerCase();
+  renderEstados(todosEstados.filter(c => c.nombre.toLowerCase().includes(txt) || (c.email||"").includes(txt)));
+}
+
+function toggleEstado(id) {
+  const det = document.getElementById("det-" + id);
+  const tog = document.getElementById("tog-" + id);
+  if (!det) return;
+  det.classList.toggle("open");
+  tog.classList.toggle("open");
+}
+
+function renderEstados(clientes) {
+  const wrap = document.getElementById("lista-estados");
+  if (!clientes.length) {
+    wrap.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>No hay clientes con pedidos aún.</p></div>`;
+    return;
+  }
+
+  wrap.innerHTML = clientes.map(c => {
+    const pedidos = c.pedidos || [];
+    let totalDeuda = 0, totalPagado = 0;
+    pedidos.forEach(p => {
+      const pagado = (p.pagos||[]).reduce((s,pg)=>s+parseFloat(pg.monto),0);
+      totalDeuda  += parseFloat(p.precio);
+      totalPagado += pagado;
+    });
+    const saldo = Math.max(0, totalDeuda - totalPagado);
+    const pct   = totalDeuda > 0 ? Math.min(100, Math.round((totalPagado/totalDeuda)*100)) : 0;
+    const shortId = c.id.replace(/-/g,"").substring(0,8);
+
+    return `
+    <div class="estado-cliente-card">
+      <div class="estado-cliente-header" onclick="toggleEstado('${shortId}')">
+        <div>
+          <div class="estado-cliente-nombre">${c.nombre}</div>
+          <div class="estado-cliente-info">${c.email}${c.telefono ? " · " + c.telefono : ""}</div>
+        </div>
+        <div class="estado-resumen">
+          <div class="estado-num">
+            <span class="val" style="color:var(--accent)">${pedidos.length}</span>
+            <span class="lbl">Pedidos</span>
+          </div>
+          <div class="estado-num">
+            <span class="val" style="color:var(--green)">$${totalPagado.toFixed(2)}</span>
+            <span class="lbl">Pagado</span>
+          </div>
+          <div class="estado-num">
+            <span class="val" style="color:${saldo>0?"var(--orange)":"var(--green)"}">$${saldo.toFixed(2)}</span>
+            <span class="lbl">Saldo</span>
+          </div>
+          <div class="estado-toggle" id="tog-${shortId}">▾</div>
+        </div>
+      </div>
+
+      <div class="estado-detalle" id="det-${shortId}">
+        <!-- Barra general -->
+        <div style="margin-bottom:1.2rem">
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-bottom:0.4rem">
+            <span>Progreso total de pagos</span><span>${pct}%</span>
+          </div>
+          <div class="estado-barra-wrap">
+            <div class="estado-barra-fill" style="width:${pct}%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-top:0.3rem">
+            <span style="color:var(--green)">Pagado: $${totalPagado.toFixed(2)}</span>
+            <span style="color:var(--orange)">Saldo: $${saldo.toFixed(2)}</span>
+            <span style="color:var(--gray)">Total: $${totalDeuda.toFixed(2)}</span>
+          </div>
+        </div>
+
+        <!-- Detalle por pedido -->
+        <p style="font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:0.6rem">Detalle por pedido</p>
+        ${pedidos.map(p => {
+          const pagado = (p.pagos||[]).reduce((s,pg)=>s+parseFloat(pg.monto),0);
+          const pSaldo = Math.max(0, parseFloat(p.precio) - pagado);
+          const pPct   = Math.min(100, Math.round((pagado/parseFloat(p.precio))*100));
+          let badgeClass = "badge-pendiente", badgeTxt = "Pendiente";
+          if (pSaldo <= 0) { badgeClass="badge-pagado"; badgeTxt="Pagado"; }
+          else if (pagado > 0) { badgeClass="badge-parcial"; badgeTxt="Parcial"; }
+          return `
+          <div class="estado-pedido-row">
+            <div>
+              <div class="estado-pedido-nombre">${p.nombre_perfume}</div>
+              <div class="estado-pedido-sub">${p.tamano} · ${p.tipo_pago} · ${new Date(p.creado_en).toLocaleDateString("es",{day:"2-digit",month:"short",year:"2-digit"})}</div>
+              <div style="width:140px;margin-top:0.4rem">
+                <div class="estado-barra-wrap" style="height:3px">
+                  <div class="estado-barra-fill" style="width:${pPct}%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="estado-pedido-nums">
+              <span style="color:var(--green)">$${pagado.toFixed(2)}</span>
+              <span style="color:var(--gray)">/</span>
+              <span style="color:var(--accent)">$${parseFloat(p.precio).toFixed(2)}</span>
+              <span class="badge ${badgeClass}">${badgeTxt}</span>
+              <button class="btn-sm btn-abono" onclick="abrirAbono('${p.id}','${p.nombre_perfume.replace(/'/g,"\'")}',${parseFloat(p.precio)},${pagado})">+ Abono</button>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── COMPROBANTE ───────────────────────────────────────────────────────────────
+let pedidoComprobanteId = null;
+
+function verComprobante(id, cliente, referencia, url, perfume, precio, pagado) {
+  pedidoComprobanteId = id;
+
+  document.getElementById("comprobante-cliente-info").textContent =
+    `${cliente} — ${perfume}`;
+
+  document.getElementById("comprobante-ref-badge").textContent =
+    referencia ? `Ref: ${referencia}` : "Sin referencia";
+
+  const wrap = document.getElementById("comprobante-img-wrap");
+  if (url) {
+    wrap.innerHTML = `<img src="${url}" alt="Comprobante de pago" onerror="this.parentElement.innerHTML='<p class=\\'no-comprobante\\'>No se pudo cargar la imagen.</p>'">`;
+  } else {
+    wrap.innerHTML = `<p class="no-comprobante">No se subió comprobante para este pedido.</p>`;
+  }
+
+  // Botón aprobar — solo si no está ya pagado
+  const btnAprobar = document.getElementById("btn-aprobar-desde-comprobante");
+  const saldo = Math.max(0, precio - pagado);
+  if (saldo <= 0) {
+    btnAprobar.style.display = "none";
+  } else {
+    btnAprobar.style.display = "";
+    btnAprobar.onclick = () => aprobarDesdComprobante(id, perfume, precio, pagado);
+  }
+
+  document.getElementById("overlay-comprobante").classList.add("open");
+}
+
+function cerrarComprobante() {
+  document.getElementById("overlay-comprobante").classList.remove("open");
+  pedidoComprobanteId = null;
+}
+
+async function aprobarDesdComprobante(id, perfume, precio, pagado) {
+  const saldo = parseFloat(precio) - parseFloat(pagado);
+  if (saldo <= 0) { mostrarToast("Ya está pagado", "error"); return; }
+
+  // Registrar abono por el saldo restante
+  const { error: errAbono } = await supa.from("pagos").insert({
+    pedido_id: id, monto: saldo, nota: "Aprobado desde comprobante"
+  });
+  if (errAbono) { mostrarToast("Error al registrar abono", "error"); return; }
+
+  // Marcar como pagado
+  await supa.from("pedidos").update({ estado: "pagado" }).eq("id", id);
+
+  cerrarComprobante();
+  mostrarToast("✓ Pedido marcado como Pagado");
+  await Promise.all([cargarPedidos(), cargarEstados()]);
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { cerrarAbono(); cerrarEstado(); cerrarComprobante(); }
+});
+</script>
+</body>
+</html>

@@ -228,6 +228,33 @@ tr:hover td { background:rgba(255,255,255,0.02); }
 .comprobante-ref { display:inline-block; font-size:0.75rem; letter-spacing:1px; background:rgba(212,175,55,0.1); color:var(--accent); border:1px solid rgba(212,175,55,0.25); padding:0.25rem 0.7rem; border-radius:20px; margin-bottom:0.8rem; }
 .no-comprobante { padding:2rem; text-align:center; color:var(--gray); font-size:0.88rem; }
 
+/* ── COMENTARIOS ADMIN ── */
+.comentario-admin-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.2rem 1.4rem; margin-bottom:1rem; }
+.comentario-admin-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:0.7rem; }
+.comentario-admin-meta { flex:1; }
+.comentario-admin-nombre { font-weight:600; font-size:0.92rem; color:var(--white); }
+.comentario-admin-fecha { font-size:0.72rem; color:var(--gray); margin-top:0.1rem; }
+.comentario-admin-estrellas { font-size:0.82rem; color:var(--accent); letter-spacing:1px; margin-top:0.2rem; }
+.comentario-admin-acciones { display:flex; gap:0.5rem; flex-shrink:0; }
+.comentario-admin-texto { font-size:0.9rem; color:#ccc; line-height:1.6; margin-bottom:0.8rem; }
+.comentario-admin-respuesta { background:rgba(212,175,55,0.06); border-left:2px solid var(--accent); border-radius:0 8px 8px 0; padding:0.6rem 0.9rem; margin-bottom:0.8rem; font-size:0.84rem; color:#aaa; }
+.comentario-admin-respuesta strong { color:var(--accent); display:block; font-size:0.7rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.2rem; }
+.responder-wrap { display:none; margin-top:0.7rem; }
+.responder-wrap textarea { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0.7rem 0.9rem; color:var(--white); font-family:var(--font-b); font-size:0.85rem; resize:vertical; min-height:70px; outline:none; }
+.responder-wrap textarea:focus { border-color:var(--accent); }
+.responder-wrap-footer { display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.5rem; }
+.comentario-oculto { opacity:0.45; }
+.badge-visible { background:rgba(46,204,113,0.12); color:#2ecc71; border:1px solid rgba(46,204,113,0.3); font-size:0.65rem; padding:0.2rem 0.55rem; border-radius:20px; letter-spacing:1px; text-transform:uppercase; }
+.badge-oculto { background:rgba(231,76,60,0.12); color:#e74c3c; border:1px solid rgba(231,76,60,0.3); font-size:0.65rem; padding:0.2rem 0.55rem; border-radius:20px; letter-spacing:1px; text-transform:uppercase; }
+
+/* ── CONFIGURACIÓN ── */
+.config-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.6rem 1.8rem; margin-bottom:1.2rem; }
+.config-titulo { font-family:var(--font-d); font-size:1.2rem; color:var(--white); margin-bottom:0.4rem; }
+.config-desc { font-size:0.84rem; color:var(--gray); line-height:1.5; }
+
+/* ── MODAL RESPONDER ── */
+.modal-responder { max-width:500px; }
+
 /* ── TOAST ── */
 .toast {
   position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px);
@@ -324,6 +351,8 @@ tr:hover td { background:rgba(255,255,255,0.02); }
       <button class="tab-btn" onclick="cambiarTab('productos',this)">Catálogo</button>
       <button class="tab-btn" onclick="cambiarTab('estados',this)">Estados de Cuenta</button>
       <button class="tab-btn" onclick="cambiarTab('nuevo',this)">+ Nuevo Pedido</button>
+      <button class="tab-btn" onclick="cambiarTab('comentarios',this)">💬 Comentarios</button>
+      <button class="tab-btn" onclick="cambiarTab('configuracion',this)">⚙️ Configuración</button>
     </div>
 
     <!-- TAB: PEDIDOS -->
@@ -436,6 +465,37 @@ tr:hover td { background:rgba(255,255,255,0.02); }
       </div>
     </div>
 
+    <!-- TAB: COMENTARIOS -->
+    <div class="tab-panel" id="tab-comentarios">
+      <div class="section-hdr">
+        <h2>Comentarios de Usuarios</h2>
+        <div style="display:flex;gap:0.6rem;align-items:center">
+          <select id="filtro-comentarios" onchange="filtrarComentariosAdmin(this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--white);padding:0.4rem 0.8rem;border-radius:8px;font-family:var(--font-b);font-size:0.78rem;cursor:pointer;">
+            <option value="todos">Todos</option>
+            <option value="visibles">Visibles</option>
+            <option value="ocultos">Ocultos</option>
+          </select>
+        </div>
+      </div>
+      <div id="lista-comentarios"><div class="loading">Cargando comentarios...</div></div>
+    </div>
+
+    <!-- TAB: CONFIGURACIÓN -->
+    <div class="tab-panel" id="tab-configuracion">
+      <div class="section-hdr"><h2>Configuración</h2></div>
+      <div style="max-width:500px">
+        <div class="config-card">
+          <h3 class="config-titulo">💱 Tasa del Dólar (Bs/USD)</h3>
+          <p class="config-desc">Esta tasa se muestra en el carrito de compras para que los clientes vean el total en bolívares.</p>
+          <div style="display:flex;gap:0.8rem;align-items:center;margin-top:1rem">
+            <input type="number" id="config-tasa" placeholder="Ej: 89.50" step="0.01" min="0" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--white);padding:0.75rem 1rem;border-radius:10px;font-family:var(--font-b);font-size:1rem;outline:none;">
+            <button class="btn-primary" style="width:auto;padding:0.75rem 1.4rem;white-space:nowrap" onclick="guardarTasa()">Guardar Tasa</button>
+          </div>
+          <div id="tasa-actual" style="margin-top:0.7rem;font-size:0.82rem;color:var(--gray)">Cargando tasa actual...</div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /main -->
 </div><!-- /admin-wrap -->
 
@@ -536,6 +596,16 @@ tr:hover td { background:rgba(255,255,255,0.02); }
       </div>
     </div>
     <div class="form-row">
+      <div class="field">
+        <label>Precio original 30ml ($) <span style="font-size:0.72rem;color:#888;font-weight:400;">(opcional — para mostrar descuento)</span></label>
+        <input type="number" id="prod-precio30-orig" value="" step="0.50" min="0" placeholder="Ej: 10.00">
+      </div>
+      <div class="field">
+        <label>Precio original 60ml ($) <span style="font-size:0.72rem;color:#888;font-weight:400;">(opcional — para mostrar descuento)</span></label>
+        <input type="number" id="prod-precio60-orig" value="" step="0.50" min="0" placeholder="Ej: 18.00">
+      </div>
+    </div>
+    <div class="form-row">
       <div class="field" style="flex-direction:row;align-items:center;gap:0.8rem;padding-top:1.2rem">
         <input type="checkbox" id="prod-disponible" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
         <label for="prod-disponible" style="text-transform:none;letter-spacing:0;font-size:0.88rem;color:var(--white);cursor:pointer">Disponible</label>
@@ -564,6 +634,23 @@ tr:hover td { background:rgba(255,255,255,0.02); }
     <div class="modal-btns" style="margin-top:1rem">
       <button class="btn-cancel" onclick="cerrarComprobante()">Cerrar</button>
       <button class="btn-primary" id="btn-aprobar-desde-comprobante" onclick="">✓ Marcar como Pagado</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL RESPONDER COMENTARIO ════ -->
+<div class="overlay" id="overlay-responder">
+  <div class="modal modal-responder">
+    <h3>Responder Comentario</h3>
+    <p class="modal-info" id="responder-autor">—</p>
+    <div class="field" style="margin-top:0.8rem">
+      <p id="responder-texto-preview" style="font-size:0.88rem;color:#aaa;font-style:italic;background:rgba(255,255,255,0.03);padding:0.8rem;border-radius:8px;border-left:2px solid rgba(212,175,55,0.3);margin-bottom:1rem;"></p>
+      <label>Tu respuesta</label>
+      <textarea id="responder-input" rows="4" placeholder="Escribe tu respuesta..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cerrarResponder()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarRespuesta()">Publicar Respuesta</button>
     </div>
   </div>
 </div>
@@ -600,7 +687,7 @@ function salir() {
 // ── INIT ─────────────────────────────────────────────────────────────────────
 async function iniciarAdmin() {
   supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-  await Promise.all([cargarPedidos(), cargarClientes(), cargarProductos(), cargarEstados()]);
+  await Promise.all([cargarPedidos(), cargarClientes(), cargarProductos(), cargarEstados(), cargarComentarios(), cargarConfiguracion()]);
   cargarClientesSelect();
 }
 
@@ -618,6 +705,8 @@ function cambiarTab(id, btn) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   document.getElementById("tab-" + id).classList.add("active");
   btn.classList.add("active");
+  if (id === "comentarios") cargarComentarios();
+  if (id === "configuracion") cargarConfiguracion();
 }
 
 // ── PEDIDOS ──────────────────────────────────────────────────────────────────
@@ -910,8 +999,8 @@ function renderProductos(productos) {
     <td>${imgHtml}</td>
     <td><strong>${p.nombre}</strong><br><span style="font-size:0.72rem;color:var(--gray)">${piramideResumen.substring(0,60)}${piramideResumen.length>60?"…":""}</span></td>
     <td style="text-transform:capitalize">${p.categoria}</td>
-    <td style="color:var(--accent)">$${parseFloat(p.precio_30ml).toFixed(2)}</td>
-    <td style="color:var(--accent)">$${parseFloat(p.precio_60ml).toFixed(2)}</td>
+    <td style="color:var(--accent)">$${parseFloat(p.precio_30ml).toFixed(2)}${p.precio_30ml_orig ? `<br><span style="font-size:0.68rem;color:#888;text-decoration:line-through">$${parseFloat(p.precio_30ml_orig).toFixed(2)}</span>` : ""}</td>
+    <td style="color:var(--accent)">$${parseFloat(p.precio_60ml).toFixed(2)}${p.precio_60ml_orig ? `<br><span style="font-size:0.68rem;color:#888;text-decoration:line-through">$${parseFloat(p.precio_60ml_orig).toFixed(2)}</span>` : ""}</td>
     <td>${p.disponible
       ? '<span class="badge badge-pagado">Disponible</span>'
       : '<span class="badge badge-pendiente">No disponible</span>'}</td>
@@ -938,6 +1027,8 @@ function abrirNuevoProducto() {
   document.getElementById("prod-notas-fondo").value = "";
   document.getElementById("prod-precio30").value = "7.00";
   document.getElementById("prod-precio60").value = "14.00";
+  document.getElementById("prod-precio30-orig").value = "";
+  document.getElementById("prod-precio60-orig").value = "";
   document.getElementById("prod-categoria").value = "caballeros";
   document.getElementById("prod-disponible").checked = true;
   document.getElementById("prod-nuevo").checked = false;
@@ -958,6 +1049,8 @@ function editarProducto(id) {
   document.getElementById("prod-notas-fondo").value = p.notas_fondo || "";
   document.getElementById("prod-precio30").value = p.precio_30ml;
   document.getElementById("prod-precio60").value = p.precio_60ml;
+  document.getElementById("prod-precio30-orig").value = p.precio_30ml_orig || "";
+  document.getElementById("prod-precio60-orig").value = p.precio_60ml_orig || "";
   document.getElementById("prod-categoria").value = p.categoria;
   document.getElementById("prod-disponible").checked = p.disponible;
   document.getElementById("prod-nuevo").checked = p.nuevo;
@@ -979,6 +1072,8 @@ async function guardarProducto() {
   const notas_fondo      = document.getElementById("prod-notas-fondo").value.trim();
   const precio_30ml      = parseFloat(document.getElementById("prod-precio30").value);
   const precio_60ml      = parseFloat(document.getElementById("prod-precio60").value);
+  const precio_30ml_orig = parseFloat(document.getElementById("prod-precio30-orig").value) || null;
+  const precio_60ml_orig = parseFloat(document.getElementById("prod-precio60-orig").value) || null;
   const categoria        = document.getElementById("prod-categoria").value;
   const disponible       = document.getElementById("prod-disponible").checked;
   const nuevo            = document.getElementById("prod-nuevo").checked;
@@ -988,7 +1083,8 @@ async function guardarProducto() {
   const datos = {
     nombre, imagen, descripcion_corta: descripcion, descripcion_larga,
     notas_salida, notas_corazon, notas_fondo,
-    precio_30ml, precio_60ml, categoria, disponible, nuevo
+    precio_30ml, precio_60ml, precio_30ml_orig, precio_60ml_orig,
+    categoria, disponible, nuevo
   };
 
   let error;
@@ -1186,8 +1282,124 @@ async function aprobarDesdComprobante(id, perfume, precio, pagado) {
   await Promise.all([cargarPedidos(), cargarEstados()]);
 }
 
+// ── COMENTARIOS ──────────────────────────────────────────────────────────────
+let todosComentarios = [];
+let comentarioActualId = null;
+
+async function cargarComentarios() {
+  const { data, error } = await supa.from("comentarios")
+    .select("*, clientes(nombre, email)")
+    .order("creado_en", { ascending: false });
+  if (error) { mostrarToast("Error al cargar comentarios", "error"); return; }
+  todosComentarios = data || [];
+  renderComentarios(todosComentarios);
+}
+
+function filtrarComentariosAdmin(filtro) {
+  if (filtro === "visibles") renderComentarios(todosComentarios.filter(c => c.visible));
+  else if (filtro === "ocultos") renderComentarios(todosComentarios.filter(c => !c.visible));
+  else renderComentarios(todosComentarios);
+}
+
+function renderComentarios(lista) {
+  const wrap = document.getElementById("lista-comentarios");
+  if (!lista.length) {
+    wrap.innerHTML = `<div class="empty-state" style="padding:3rem;text-align:center;color:var(--gray)">No hay comentarios aún.</div>`;
+    return;
+  }
+  wrap.innerHTML = lista.map(c => {
+    const estrellas = "★".repeat(c.estrellas||5)+"☆".repeat(5-(c.estrellas||5));
+    const fecha = new Date(c.creado_en).toLocaleDateString("es", {day:"2-digit",month:"short",year:"numeric"});
+    const textoSeguro = (c.texto||"").replace(/'/g,"\'").replace(/\n/g," ");
+    const autorSeguro = (c.clientes?.nombre||"Usuario").replace(/'/g,"\'");
+    const respuesta = c.respuesta_admin
+      ? `<div class="comentario-admin-respuesta"><strong>Respuesta Empire Parfum</strong>${c.respuesta_admin}</div>` : "";
+    return `<div class="comentario-admin-card${c.visible?'':' comentario-oculto'}" id="ccoment-${c.id}">
+      <div class="comentario-admin-header">
+        <div class="comentario-admin-meta">
+          <div class="comentario-admin-nombre">${c.clientes?.nombre||"Usuario"} <span style="font-size:0.72rem;color:var(--gray);">${c.clientes?.email||""}</span></div>
+          <div class="comentario-admin-fecha">${fecha}</div>
+          <div class="comentario-admin-estrellas">${estrellas}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+          <span class="${c.visible?'badge-visible':'badge-oculto'}">${c.visible?'Visible':'Oculto'}</span>
+          <div class="comentario-admin-acciones">
+            <button class="btn-sm btn-estado" onclick="abrirResponder('${c.id}','${autorSeguro}','${textoSeguro}')">💬 Responder</button>
+            <button class="btn-sm btn-abono" onclick="toggleVisibilidadComentario('${c.id}',${c.visible})">${c.visible?'Ocultar':'Mostrar'}</button>
+            <button class="btn-sm btn-eliminar" onclick="eliminarComentario('${c.id}')">🗑</button>
+          </div>
+        </div>
+      </div>
+      <div class="comentario-admin-texto">${c.texto}</div>
+      ${respuesta}
+    </div>`;
+  }).join("");
+}
+
+async function toggleVisibilidadComentario(id, visible) {
+  const { error } = await supa.from("comentarios").update({ visible: !visible }).eq("id", id);
+  if (error) { mostrarToast("Error al cambiar visibilidad", "error"); return; }
+  mostrarToast(visible ? "Comentario ocultado" : "Comentario visible");
+  await cargarComentarios();
+}
+
+async function eliminarComentario(id) {
+  if (!confirm("¿Eliminar este comentario? Esta acción no se puede deshacer.")) return;
+  todosComentarios = todosComentarios.filter(c => c.id !== id);
+  const card = document.getElementById("ccoment-"+id);
+  if (card) card.remove();
+  await supa.from("comentarios").delete().eq("id", id);
+  mostrarToast("✓ Comentario eliminado");
+}
+
+function abrirResponder(id, autor, texto) {
+  comentarioActualId = id;
+  document.getElementById("responder-autor").textContent = "Comentario de: " + autor;
+  document.getElementById("responder-texto-preview").textContent = texto;
+  document.getElementById("responder-input").value = "";
+  document.getElementById("overlay-responder").classList.add("open");
+}
+
+function cerrarResponder() {
+  document.getElementById("overlay-responder").classList.remove("open");
+  comentarioActualId = null;
+}
+
+async function guardarRespuesta() {
+  const respuesta = document.getElementById("responder-input").value.trim();
+  if (!respuesta) { mostrarToast("Escribe una respuesta", "error"); return; }
+  const { error } = await supa.from("comentarios").update({ respuesta_admin: respuesta }).eq("id", comentarioActualId);
+  if (error) { mostrarToast("Error al guardar respuesta", "error"); return; }
+  cerrarResponder();
+  mostrarToast("✓ Respuesta publicada");
+  await cargarComentarios();
+}
+
+// ── CONFIGURACIÓN / TASA ──────────────────────────────────────────────────────
+async function cargarConfiguracion() {
+  const { data } = await supa.from("configuracion").select("*");
+  if (!data) return;
+  const tasa = data.find(c => c.clave === "tasa_dolar");
+  if (tasa) {
+    document.getElementById("config-tasa").value = tasa.valor;
+    document.getElementById("tasa-actual").textContent = `Tasa actual: Bs ${parseFloat(tasa.valor).toFixed(2)} por $1 USD`;
+  } else {
+    document.getElementById("tasa-actual").textContent = "No hay tasa configurada aún.";
+  }
+}
+
+async function guardarTasa() {
+  const val = document.getElementById("config-tasa").value.trim();
+  if (!val || isNaN(parseFloat(val))) { mostrarToast("Ingresa un valor válido", "error"); return; }
+  // Upsert en tabla configuracion
+  const { error } = await supa.from("configuracion").upsert({ clave: "tasa_dolar", valor: val }, { onConflict: "clave" });
+  if (error) { mostrarToast("Error al guardar tasa", "error"); return; }
+  document.getElementById("tasa-actual").textContent = `Tasa actual: Bs ${parseFloat(val).toFixed(2)} por $1 USD`;
+  mostrarToast("✓ Tasa actualizada a Bs " + parseFloat(val).toFixed(2));
+}
+
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") { cerrarAbono(); cerrarEstado(); cerrarComprobante(); }
+  if (e.key === "Escape") { cerrarAbono(); cerrarEstado(); cerrarComprobante(); cerrarResponder(); }
 });
 </script>
 </body>
